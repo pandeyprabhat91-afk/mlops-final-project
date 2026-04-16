@@ -3,7 +3,11 @@
     "allow": [
       "Read(//c/Users/lonew/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/subagent-driven-development/**)",
       "Read(//c/Users/lonew/OneDrive/Desktop/mlops/ project/deepfake-detection/ml/**)",
-      "Read(//c/Users/lonew/OneDrive/Desktop/mlops/ project/deepfake-detection/tests/unit/**)"
+      "Read(//c/Users/lonew/OneDrive/Desktop/mlops/ project/deepfake-detection/tests/unit/**)",
+      "Read(//c/Users/lonew/AppData/Roaming/Docker/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\lonew\\AppData\\Roaming\\Docker"
     ]
   }
 }
