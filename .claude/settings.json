@@ -5,7 +5,8 @@
       "Read(//c/Users/lonew/OneDrive/Desktop/mlops/ project/deepfake-detection/ml/**)",
       "Read(//c/Users/lonew/OneDrive/Desktop/mlops/ project/deepfake-detection/tests/unit/**)",
       "Read(//c/Users/lonew/AppData/Roaming/Docker/**)",
-      "WebFetch(domain:facia.ai)"
+      "WebFetch(domain:facia.ai)",
+      "Read(//c/Users/lonew/.claude/skills/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\lonew\\AppData\\Roaming\\Docker"
