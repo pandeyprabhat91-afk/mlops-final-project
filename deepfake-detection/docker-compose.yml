@@ -27,6 +27,7 @@ volumes:
   mlflow-data:
   grafana-data:
   prometheus-data:
+  torch-hub-cache:
 
 services:
   postgres:
@@ -98,6 +99,7 @@ services:
     env_file: .env
     volumes:
       - ./mlruns:/workspace/mlruns
+      - torch-hub-cache:/root/.cache/torch
     depends_on:
       postgres:
         condition: service_healthy
