@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Deepfake Detection — Architecture Diagram</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      padding: 32px 24px;
+      min-height: 100vh;
+    }
+    h1 { font-size: 1.4rem; font-weight: 600; color: #93c5fd; margin-bottom: 4px; }
+    .subtitle { font-size: 0.85rem; color: #64748b; margin-bottom: 32px; }
+
+    svg { display: block; width: 100%; max-width: 1100px; margin: 0 auto; }
+
+    /* Block styles */
+    .blk { rx: 8; ry: 8; }
+    .blk-user    { fill: #1e293b; stroke: #475569; }
+    .blk-front   { fill: #0f2d4a; stroke: #3b82f6; }
+    .blk-back    { fill: #0f2d4a; stroke: #3b82f6; }
+    .blk-mlflow  { fill: #1a2a1a; stroke: #22c55e; }
+    .blk-airflow { fill: #2a1a0f; stroke: #f97316; }
+    .blk-data    { fill: #1a1a2a; stroke: #8b5cf6; }
+    .blk-mon     { fill: #2a1a1a; stroke: #ef4444; }
+    .blk-db      { fill: #1a2020; stroke: #14b8a6; }
+    .blk-ci      { fill: #1e1a2a; stroke: #a78bfa; }
+
+    .lbl-main  { fill: #e2e8f0; font-size: 13px; font-weight: 600; }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 16px; }
+      h1 { color: #1e3a5f; }
+      .subtitle { color: #555; }
+      .blk-user    { fill: #f0f4f8; stroke: #6b7280; }
+      .blk-front   { fill: #dbeafe; stroke: #1d4ed8; }
+      .blk-back    { fill: #dbeafe; stroke: #1d4ed8; }
+      .blk-mlflow  { fill: #dcfce7; stroke: #15803d; }
+      .blk-airflow { fill: #ffedd5; stroke: #c2410c; }
+      .blk-data    { fill: #ede9fe; stroke: #6d28d9; }
+      .blk-mon     { fill: #fee2e2; stroke: #b91c1c; }
+      .blk-db      { fill: #ccfbf1; stroke: #0f766e; }
+      .blk-ci      { fill: #f3e8ff; stroke: #7c3aed; }
+      .lbl-main  { fill: #111; }
+      .lbl-sub   { fill: #444; }
+      .lbl-port  { fill: #92400e; }
+      .lbl-badge { fill: #1e293b; }
+    }
+    .lbl-sub   { fill: #94a3b8; font-size: 10.5px; }
+    .lbl-port  { fill: #fbbf24; font-size: 10px; font-weight: 600; }
+    .lbl-badge { fill: #1e293b; font-size: 9.5px; }
+
+    /* Arrow markers */
+    .arr { stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+    .arr-blue   { stroke: #3b82f6; }
+    .arr-green  { stroke: #22c55e; }
+    .arr-orange { stroke: #f97316; }
+    .arr-purple { stroke: #8b5cf6; }
+    .arr-red    { stroke: #ef4444; }
+    .arr-teal   { stroke: #14b8a6; }
+
+    .arr-label { font-size: 9.5px; fill: #94a3b8; }
+
+    /* Legend */
+    .legend { max-width: 1100px; margin: 24px auto 0; display: flex; flex-wrap: wrap; gap: 16px; }
+    .leg-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 3px; border: 2px solid; }
+
+    /* Block table */
+    .block-table { max-width: 1100px; margin: 32px auto 0; border-collapse: collapse; width: 100%; font-size: 12.5px; }
+    .block-table th { background: #1e293b; color: #93c5fd; padding: 8px 12px; text-align: left; border-bottom: 1px solid #334155; }
+    .block-table td { padding: 7px 12px; border-bottom: 1px solid #1e293b; color: #cbd5e1; vertical-align: top; }
+    .block-table tr:hover td { background: #1e293b44; }
+    .port-pill { background: #1e293b; border: 1px solid #334155; color: #fbbf24; border-radius: 4px; padding: 1px 6px; font-size: 11px; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<h1>Deepfake Detection System — Architecture Diagram</h1>
+<p class="subtitle">End-to-end MLOps platform · Docker Compose · Local deployment · v1.0 · 2026-04</p>
+
+<svg viewBox="0 0 1080 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/>
+    </marker>
+    <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#14b8a6"/>
+    </marker>
+  </defs>
+
+  <!-- ══════════════════════ USER ══════════════════════ -->
+  <rect class="blk blk-user" x="20" y="290" width="100" height="56"/>
+  <text class="lbl-main" x="70" y="313" text-anchor="middle">User</text>
+  <text class="lbl-sub"  x="70" y="330" text-anchor="middle">Browser</text>
+
+  <!-- ══════════════════════ FRONTEND ══════════════════════ -->
+  <rect class="blk blk-front" x="160" y="270" width="150" height="96"/>
+  <text class="lbl-main" x="235" y="294" text-anchor="middle">Frontend</text>
+  <text class="lbl-sub"  x="235" y="310" text-anchor="middle">React + Vite</text>
+  <text class="lbl-sub"  x="235" y="324" text-anchor="middle">Nginx (TLS)</text>
+  <text class="lbl-port" x="235" y="340" text-anchor="middle">:3000 / :3443</text>
+  <text class="lbl-sub"  x="235" y="356" text-anchor="middle">Proxy /api/* → backend</text>
+
+  <!-- ══════════════════════ BACKEND ══════════════════════ -->
+  <rect class="blk blk-back" x="370" y="230" width="180" height="176"/>
+  <text class="lbl-main" x="460" y="254" text-anchor="middle">FastAPI Backend</text>
+  <text class="lbl-sub"  x="460" y="270" text-anchor="middle">Uvicorn · Python 3.11</text>
+  <text class="lbl-port" x="460" y="286" text-anchor="middle">:8000</text>
+  <line x1="375" y1="292" x2="545" y2="292" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="460" y="307" text-anchor="middle">POST /predict</text>
+  <text class="lbl-sub"  x="460" y="321" text-anchor="middle">Preprocessing · MTCNN</text>
+  <text class="lbl-sub"  x="460" y="335" text-anchor="middle">Grad-CAM · Drift detect</text>
+  <text class="lbl-sub"  x="460" y="349" text-anchor="middle">GET /health · /ready</text>
+  <text class="lbl-sub"  x="460" y="363" text-anchor="middle">GET /metrics (Prometheus)</text>
+  <text class="lbl-sub"  x="460" y="377" text-anchor="middle">POST /admin/rollback</text>
+  <text class="lbl-sub"  x="460" y="391" text-anchor="middle">POST /feedback</text>
+
+  <!-- ══════════════════════ MLFLOW ══════════════════════ -->
+  <rect class="blk blk-mlflow" x="620" y="190" width="170" height="116"/>
+  <text class="lbl-main" x="705" y="214" text-anchor="middle">MLflow Server</text>
+  <text class="lbl-sub"  x="705" y="230" text-anchor="middle">Tracking + Registry</text>
+  <text class="lbl-port" x="705" y="246" text-anchor="middle">:5000</text>
+  <line x1="625" y1="252" x2="785" y2="252" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="705" y="267" text-anchor="middle">Experiment runs</text>
+  <text class="lbl-sub"  x="705" y="281" text-anchor="middle">Model Registry</text>
+  <text class="lbl-sub"  x="705" y="295" text-anchor="middle">Staging → Production</text>
+
+  <!-- ══════════════════════ AIRFLOW ══════════════════════ -->
+  <rect class="blk blk-airflow" x="620" y="340" width="170" height="130"/>
+  <text class="lbl-main" x="705" y="364" text-anchor="middle">Apache Airflow</text>
+  <text class="lbl-sub"  x="705" y="380" text-anchor="middle">LocalExecutor</text>
+  <text class="lbl-port" x="705" y="396" text-anchor="middle">:8080</text>
+  <line x1="625" y1="402" x2="785" y2="402" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="705" y="417" text-anchor="middle">deepfake_pipeline (daily)</text>
+  <text class="lbl-sub"  x="705" y="431" text-anchor="middle">Ingest→Frames→Faces</text>
+  <text class="lbl-sub"  x="705" y="445" text-anchor="middle">Features→Validate→DVC</text>
+  <text class="lbl-sub"  x="705" y="459" text-anchor="middle">retraining_dag (weekly)</text>
+
+  <!-- ══════════════════════ DATA / DVC ══════════════════════ -->
+  <rect class="blk blk-data" x="860" y="340" width="160" height="100"/>
+  <text class="lbl-main" x="940" y="364" text-anchor="middle">Data Layer</text>
+  <text class="lbl-sub"  x="940" y="380" text-anchor="middle">DVC + Git LFS</text>
+  <line x1="865" y1="386" x2="1015" y2="386" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="940" y="401" text-anchor="middle">data/raw  (MP4s)</text>
+  <text class="lbl-sub"  x="940" y="415" text-anchor="middle">data/frames · faces</text>
+  <text class="lbl-sub"  x="940" y="429" text-anchor="middle">data/features (.pt)</text>
+
+  <!-- ══════════════════════ POSTGRES ══════════════════════ -->
+  <rect class="blk blk-db" x="860" y="190" width="160" height="90"/>
+  <text class="lbl-main" x="940" y="214" text-anchor="middle">PostgreSQL 15</text>
+  <text class="lbl-sub"  x="940" y="230" text-anchor="middle">Airflow metadata</text>
+  <text class="lbl-sub"  x="940" y="246" text-anchor="middle">Backend state</text>
+  <text class="lbl-port" x="940" y="262" text-anchor="middle">:5432</text>
+
+  <!-- ══════════════════════ MONITORING ══════════════════════ -->
+  <rect class="blk blk-mon" x="160" y="460" width="200" height="130"/>
+  <text class="lbl-main" x="260" y="484" text-anchor="middle">Monitoring Stack</text>
+  <line x1="165" y1="490" x2="355" y2="490" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="260" y="506" text-anchor="middle">Prometheus :9090</text>
+  <text class="lbl-sub"  x="260" y="520" text-anchor="middle">Grafana :3001</text>
+  <text class="lbl-sub"  x="260" y="534" text-anchor="middle">Node Exporter :9100</text>
+  <line x1="165" y1="540" x2="355" y2="540" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="260" y="554" text-anchor="middle">4 Grafana dashboards</text>
+  <text class="lbl-sub"  x="260" y="568" text-anchor="middle">Alerts: errRate/drift/latency</text>
+
+  <!-- ══════════════════════ CI/CD ══════════════════════ -->
+  <rect class="blk blk-ci" x="370" y="50" width="180" height="110"/>
+  <text class="lbl-main" x="460" y="74" text-anchor="middle">CI/CD Pipeline</text>
+  <text class="lbl-sub"  x="460" y="90" text-anchor="middle">GitHub Actions</text>
+  <line x1="375" y1="96" x2="545" y2="96" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="460" y="111" text-anchor="middle">lint → unit tests</text>
+  <text class="lbl-sub"  x="460" y="125" text-anchor="middle">dvc repro --dry</text>
+  <text class="lbl-sub"  x="460" y="139" text-anchor="middle">integration tests</text>
+  <text class="lbl-sub"  x="460" y="153" text-anchor="middle">docker build</text>
+
+  <!-- ══════════════════════ ML TRAINING ══════════════════════ -->
+  <rect class="blk blk-mlflow" x="620" y="50" width="170" height="110"/>
+  <text class="lbl-main" x="705" y="74" text-anchor="middle">ML Training</text>
+  <text class="lbl-sub"  x="705" y="90" text-anchor="middle">ml/train.py · MLproject</text>
+  <line x1="625" y1="96" x2="785" y2="96" stroke="#334155" stroke-width="1"/>
+  <text class="lbl-sub"  x="705" y="111" text-anchor="middle">EfficientNet-B0 + LSTM</text>
+  <text class="lbl-sub"  x="705" y="125" text-anchor="middle">INT8 Quantization</text>
+  <text class="lbl-sub"  x="705" y="139" text-anchor="middle">mlflow.log_metrics()</text>
+  <text class="lbl-sub"  x="705" y="153" text-anchor="middle">git_commit tag</text>
+
+  <!-- ══════════════════ ARROWS ══════════════════ -->
+
+  <!-- User → Frontend -->
+  <path class="arr arr-blue" d="M120,318 L158,318" marker-end="url(#arrow-blue)"/>
+  <text class="arr-label" x="132" y="312">HTTP</text>
+
+  <!-- Frontend → Backend (REST) -->
+  <path class="arr arr-blue" d="M310,318 L368,318" marker-end="url(#arrow-blue)"/>
+  <text class="arr-label" x="320" y="312">REST /api/*</text>
+
+  <!-- Backend → MLflow (load model) -->
+  <path class="arr arr-green" d="M550,280 L618,260" marker-end="url(#arrow-green)"/>
+  <text class="arr-label" x="556" y="265">pyfunc.load_model()</text>
+
+  <!-- Backend → Airflow (pipeline status) -->
+  <path class="arr arr-orange" d="M550,370 L618,390" marker-end="url(#arrow-orange)"/>
+  <text class="arr-label" x="554" y="375">HTTP /api/v1</text>
+
+  <!-- Airflow → MLflow (register model) -->
+  <path class="arr arr-green" d="M705,340 L705,308" marker-end="url(#arrow-green)"/>
+  <text class="arr-label" x="710" y="328">register_model()</text>
+
+  <!-- Airflow → Data -->
+  <path class="arr arr-purple" d="M790,405 L858,405" marker-end="url(#arrow-purple)"/>
+  <text class="arr-label" x="800" y="398">dvc add</text>
+
+  <!-- MLflow → Postgres -->
+  <path class="arr arr-teal" d="M790,248 L858,248" marker-end="url(#arrow-teal)"/>
+  <text class="arr-label" x="800" y="242">metadata</text>
+
+  <!-- Airflow → Postgres -->
+  <path class="arr arr-teal" d="M790,455 L940,455 L940,282" marker-end="url(#arrow-teal)"/>
+  <text class="arr-label" x="870" y="450">metadata</text>
+
+  <!-- Backend → Monitoring (metrics scrape) -->
+  <path class="arr arr-red" d="M460,406 L460,480 L360,510" marker-end="url(#arrow-red)"/>
+  <text class="arr-label" x="390" y="475">scrape /metrics</text>
+
+  <!-- Airflow → Monitoring -->
+  <path class="arr arr-red" d="M620,455 L362,520" marker-end="url(#arrow-red)"/>
+  <text class="arr-label" x="460" y="488">scrape :8080</text>
+
+  <!-- CI/CD → Backend (triggers build) -->
+  <path class="arr arr-purple" d="M460,160 L460,228" marker-end="url(#arrow-purple)"/>
+  <text class="arr-label" x="464" y="200">docker build</text>
+
+  <!-- CI/CD → ML Training -->
+  <path class="arr arr-green" d="M550,105 L618,105" marker-end="url(#arrow-green)"/>
+  <text class="arr-label" x="556" y="99">dvc repro</text>
+
+  <!-- ML Training → MLflow (log runs) -->
+  <path class="arr arr-green" d="M705,160 L705,188" marker-end="url(#arrow-green)"/>
+  <text class="arr-label" x="710" y="180">log runs</text>
+
+</svg>
+
+<!-- ══════════════════════ BLOCK DESCRIPTIONS ══════════════════════ -->
+<div style="max-width:1100px;margin:32px auto 0;">
+  <h2 style="font-size:1rem;color:#93c5fd;margin-bottom:12px;">Block Descriptions</h2>
+  <table class="block-table">
+    <thead>
+      <tr><th>Block</th><th>Port(s)</th><th>Technology</th><th>Responsibility</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Frontend</td>
+        <td><span class="port-pill">3000</span> <span class="port-pill">3443</span></td>
+        <td>React 18 · Vite · Nginx</td>
+        <td>Drag-and-drop MP4 upload · Prediction result with Grad-CAM overlay · Pipeline Dashboard (MLflow runs, Airflow DAG status, throughput). Nginx proxies <code>/api/*</code> to the backend and terminates TLS.</td>
+      </tr>
+      <tr>
+        <td>FastAPI Backend</td>
+        <td><span class="port-pill">8000</span></td>
+        <td>FastAPI · Uvicorn · Python 3.11</td>
+        <td>Core inference service. Receives MP4 uploads, runs MTCNN face detection + frame extraction, calls <code>mlflow.pyfunc.load_model()</code> in-process for inference, generates Grad-CAM heatmaps, detects feature drift, logs feedback, exposes Prometheus metrics at <code>/metrics</code>, and provides admin rollback at <code>/admin/rollback</code>.</td>
+      </tr>
+      <tr>
+        <td>MLflow Server</td>
+        <td><span class="port-pill">5000</span></td>
+        <td>MLflow v3.10.1</td>
+        <td>Experiment tracking UI + Model Registry. Stores run metadata, metrics, parameters, and artifacts. Manages model lifecycle: None → Staging → Production → Archived. Backend loads the Production model directly via <code>mlflow.pyfunc.load_model("models:/deepfake/Production")</code>.</td>
+      </tr>
+      <tr>
+        <td>ML Training</td>
+        <td>—</td>
+        <td>PyTorch · EfficientNet-B0 · LSTM · MLproject</td>
+        <td>CNN+LSTM architecture: EfficientNet-B0 extracts per-frame spatial features (1280-dim), 2-layer LSTM captures temporal dependencies across 30 frames, linear head outputs fake probability. Post-training INT8 dynamic quantization via <code>ml/quantize.py</code>. Every run tagged with Git commit SHA for reproducibility.</td>
+      </tr>
+      <tr>
+        <td>Apache Airflow</td>
+        <td><span class="port-pill">8080</span></td>
+        <td>Airflow 2.8.1 · LocalExecutor</td>
+        <td><strong>deepfake_pipeline</strong> (daily): Ingest MP4s → extract 30 frames → MTCNN face detection → EfficientNet feature extraction → schema validation → baseline stats → DVC versioning. <strong>retraining_dag</strong> (weekly): checks drift/staleness → triggers pipeline → runs MLflow training → evaluates F1 → registers if ≥ 0.90 → promotes to Production. LocalExecutor: no Redis/Celery worker needed.</td>
+      </tr>
+      <tr>
+        <td>Data Layer</td>
+        <td>—</td>
+        <td>DVC 3.x · Git LFS</td>
+        <td>Manages versioning of large data artifacts: raw MP4s, extracted frames, face crops, and feature tensors. <code>.gitattributes</code> routes <code>*.pt</code>, <code>*.mp4</code>, <code>*.jpg</code> through Git LFS. <code>dvc.lock</code> pins exact data states for full pipeline reproducibility.</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL 15</td>
+        <td><span class="port-pill">5432</span></td>
+        <td>PostgreSQL 15</td>
+        <td>Persistent store for Airflow metadata (DAG runs, task instances, XCom entries) and backend state. Health-checked via <code>pg_isready</code> before dependent services start.</td>
+      </tr>
+      <tr>
+        <td>Monitoring Stack</td>
+        <td><span class="port-pill">9090</span> <span class="port-pill">3001</span> <span class="port-pill">9100</span></td>
+        <td>Prometheus v2.50.1 · Grafana 10.3.1 · Node Exporter v1.7.0</td>
+        <td>Prometheus scrapes: backend <code>/metrics</code> (inference latency, error rate, drift score, prediction counts), Airflow <code>/admin/metrics</code>, Node Exporter (CPU/RAM/disk). Grafana provides 4 dashboards: Inference, Data Pipeline, Model Drift, Combined. Alert rules: error rate &gt;5%, P95 latency &gt;200ms, drift score &gt;3.0, pipeline validation failure.</td>
+      </tr>
+      <tr>
+        <td>CI/CD Pipeline</td>
+        <td>—</td>
+        <td>GitHub Actions</td>
+        <td>On push/PR to main: lint (black, flake8, isort, ESLint) → unit tests with coverage → <code>dvc repro --dry</code> (DAG integrity) → integration tests → Docker build. Ensures every merge is tested and the DVC pipeline is consistent.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════ LEGEND ══════════════════════ -->
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#0f2d4a;border-color:#3b82f6"></div>User-facing (Frontend / Backend)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1a2a1a;border-color:#22c55e"></div>MLOps / Experiment Tracking</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#2a1a0f;border-color:#f97316"></div>Orchestration (Airflow)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1a1a2a;border-color:#8b5cf6"></div>Data Versioning (DVC / Git LFS)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#2a1a1a;border-color:#ef4444"></div>Monitoring (Prometheus / Grafana)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1a2020;border-color:#14b8a6"></div>Storage (PostgreSQL)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1e1a2a;border-color:#a78bfa"></div>CI/CD (GitHub Actions)</div>
+</div>
+
+<p style="max-width:1100px;margin:20px auto 0;font-size:11px;color:#475569;">
+  Generated 2026-04-10 · Deepfake Detection System v1.0 · Docker Compose · No cloud dependency
+</p>
+</body>
+</html>

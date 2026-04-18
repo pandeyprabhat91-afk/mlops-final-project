@@ -1,0 +1,10 @@
+train:
+  num_frames: 30
+  batch_size: 8
+  lr: 0.0001
+  epochs: 60
+  lstm_hidden: 256
+  lstm_layers: 2
+  dropout: 0.3
+  val_split: 0.2
+  backbone: efficientnet-b0

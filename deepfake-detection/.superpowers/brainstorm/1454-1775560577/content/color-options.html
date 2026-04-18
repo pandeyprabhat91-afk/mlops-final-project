@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palettes</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f0eeeb; font-family: -apple-system, 'Helvetica Neue', sans-serif; padding: 28px 24px 80px; color: #111; }
+h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.4px; }
+.lead { font-size: 13px; color: #777; margin-bottom: 32px; }
+
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+.card {
+  border-radius: 18px; overflow: hidden; cursor: pointer;
+  border: 2.5px solid transparent;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  background: white;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(0,0,0,0.13); }
+.card.selected { border-color: #111; box-shadow: 0 0 0 4px rgba(0,0,0,0.1); }
+
+.preview { height: 280px; position: relative; overflow: hidden; }
+.info { padding: 16px 18px 20px; }
+.name { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 4px; }
+.desc { font-size: 12.5px; color: #666; line-height: 1.5; }
+.swatches { display: flex; gap: 5px; margin-top: 10px; }
+.sw { height: 8px; border-radius: 99px; flex: 1; }
+
+/* ─── A: Slate + Coral ─── */
+.pa { background: #f7f5f2; }
+.pa-nav { background: rgba(247,245,242,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e8e3dc; padding: 0 20px; height: 44px; display: flex; align-items: center; gap: 8px; }
+.pa-logo { width: 22px; height: 22px; background: #1c1917; border-radius: 6px; }
+.pa-brand { font-size: 13px; font-weight: 800; color: #1c1917; letter-spacing: -0.3px; }
+.pa-links { margin-left: auto; display: flex; gap: 14px; }
+.pa-link { font-size: 11px; color: #78716c; }
+.pa-link.active { color: #e85d3a; font-weight: 600; border-bottom: 1.5px solid #e85d3a; padding-bottom: 2px; }
+.pa-hero { padding: 20px; }
+.pa-chip { display: inline-flex; align-items: center; gap: 5px; background: #fef3f0; border: 1px solid #fcd5c8; border-radius: 20px; padding: 3px 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #e85d3a; margin-bottom: 10px; }
+.pa-dot { width: 5px; height: 5px; background: #22c55e; border-radius: 50%; }
+.pa-h1 { font-size: 26px; font-weight: 900; line-height: 1.05; letter-spacing: -0.7px; color: #1c1917; margin-bottom: 6px; }
+.pa-accent { color: #e85d3a; }
+.pa-sub { font-size: 11px; color: #78716c; line-height: 1.5; margin-bottom: 14px; max-width: 260px; }
+.pa-btn { display: inline-flex; align-items: center; gap: 5px; background: #e85d3a; border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 700; color: white; }
+.pa-upload { margin: 0 20px; background: white; border: 1.5px dashed #ddd6cd; border-radius: 14px; padding: 16px; text-align: center; }
+.pa-upload-title { font-size: 11px; font-weight: 600; color: #1c1917; margin-bottom: 3px; }
+.pa-upload-sub { font-size: 10px; color: #a8a29e; }
+.pa-result { margin: 8px 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pa-res-fake { background: #fff1ee; border: 1px solid #fcd5c8; border-radius: 8px; padding: 8px 10px; }
+.pa-res-real { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 10px; }
+.pa-res-label { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+.pa-res-val { font-size: 14px; font-weight: 900; }
+
+/* ─── B: Cream + Forest Green ─── */
+.pb { background: #f9f8f4; }
+.pb-nav { background: rgba(249,248,244,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #e6e2d8; padding: 0 20px; height: 44px; display: flex; align-items: center; gap: 8px; }
+.pb-logo { width: 22px; height: 22px; background: linear-gradient(135deg, #1a4a2e, #2d7a4f); border-radius: 6px; }
+.pb-brand { font-size: 13px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.3px; }
+.pb-link-active { font-size: 11px; color: #1a4a2e; font-weight: 600; margin-left: auto; border-bottom: 1.5px solid #1a4a2e; padding-bottom: 2px; }
+.pb-hero { padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+.pb-left { flex: 1; }
+.pb-tag { display: inline-block; background: #e8f5ee; color: #1a4a2e; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 8px; }
+.pb-h1 { font-size: 24px; font-weight: 900; line-height: 1.08; letter-spacing: -0.6px; color: #111; margin-bottom: 6px; }
+.pb-em { color: #1a4a2e; font-style: italic; }
+.pb-sub { font-size: 10px; color: #888; line-height: 1.5; margin-bottom: 12px; }
+.pb-btn { display: inline-flex; align-items: center; gap: 5px; background: #1a4a2e; border-radius: 8px; padding: 7px 14px; font-size: 10px; font-weight: 700; color: white; }
+.pb-right { width: 90px; }
+.pb-face { width: 90px; height: 90px; background: linear-gradient(135deg, #e8f5ee, #f0fdf4); border: 1px solid #bbf7d0; border-radius: 50% 50% 46% 46%; display: flex; align-items: center; justify-content: center; }
+.pb-face-inner { width: 50px; height: 60px; border: 1.5px solid #2d7a4f; border-radius: 50% 50% 44% 44%; position: relative; opacity: 0.5; }
+.pb-stats { display: flex; gap: 6px; margin: 0 20px; }
+.pb-stat { flex: 1; background: white; border: 1px solid #e6e2d8; border-radius: 8px; padding: 8px; }
+.pb-stat-val { font-size: 16px; font-weight: 900; color: #1a4a2e; }
+.pb-stat-label { font-size: 8px; color: #999; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ─── C: White + Amber/Gold ─── */
+.pc { background: #ffffff; }
+.pc-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #f0ece4; padding: 0 20px; height: 44px; display: flex; align-items: center; gap: 8px; }
+.pc-logo { width: 22px; height: 22px; background: linear-gradient(135deg, #b45309, #d97706); border-radius: 6px; }
+.pc-brand { font-size: 13px; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+.pc-active { margin-left: auto; font-size: 11px; font-weight: 600; color: #b45309; }
+.pc-hero { padding: 18px 20px 10px; }
+.pc-eyebrow { display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #92400e; margin-bottom: 10px; }
+.pc-dot { width: 5px; height: 5px; background: #22c55e; border-radius: 50%; }
+.pc-h1 { font-size: 26px; font-weight: 900; line-height: 1.05; letter-spacing: -0.6px; color: #111; margin-bottom: 6px; }
+.pc-h1 .hl { background: linear-gradient(90deg, #b45309, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.pc-sub { font-size: 10px; color: #888; line-height: 1.5; margin-bottom: 12px; }
+.pc-btn { display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #b45309, #d97706); border-radius: 8px; padding: 8px 16px; font-size: 10px; font-weight: 700; color: white; box-shadow: 0 4px 12px rgba(180,83,9,0.3); }
+.pc-upload { margin: 0 20px; border: 1.5px dashed #fcd34d; border-radius: 14px; padding: 14px; text-align: center; background: #fffbf0; }
+.pc-upload-icon { width: 28px; height: 28px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 7px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
+.pc-upload-title { font-size: 11px; font-weight: 600; color: #111; margin-bottom: 2px; }
+.pc-upload-sub { font-size: 10px; color: #aaa; }
+.pc-result-row { display: flex; gap: 6px; margin: 8px 20px 0; }
+.pc-fake { flex: 1; background: #fff7f5; border: 1px solid #fecaca; border-radius: 8px; padding: 7px 10px; }
+.pc-real { flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 7px 10px; }
+.pc-res-l { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+.pc-res-v { font-size: 15px; font-weight: 900; }
+
+/* ─── D: Off-White + Electric Blue (NOT indigo—bright cyan-blue) ─── */
+.pd { background: #f4f7fb; }
+.pd-nav { background: rgba(244,247,251,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #dde6f0; padding: 0 20px; height: 44px; display: flex; align-items: center; gap: 8px; }
+.pd-logo { width: 22px; height: 22px; background: linear-gradient(135deg, #0369a1, #0ea5e9); border-radius: 6px; }
+.pd-brand { font-size: 13px; font-weight: 800; color: #0c1a2e; letter-spacing: -0.3px; }
+.pd-active { margin-left: auto; font-size: 11px; font-weight: 600; color: #0369a1; border-bottom: 1.5px solid #0369a1; padding-bottom: 2px; }
+.pd-bg { background: linear-gradient(160deg, #eef6ff 0%, #f4f7fb 50%, #f0f4ff 100%); padding: 18px 20px 10px; }
+.pd-eyebrow { display: inline-flex; align-items: center; gap: 5px; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 20px; padding: 3px 10px; font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #0369a1; margin-bottom: 10px; }
+.pd-dot { width: 5px; height: 5px; background: #22c55e; border-radius: 50%; }
+.pd-h1 { font-size: 26px; font-weight: 900; line-height: 1.05; letter-spacing: -0.6px; color: #0c1a2e; margin-bottom: 6px; }
+.pd-h1 .hl { background: linear-gradient(90deg, #0369a1, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.pd-sub { font-size: 10px; color: #64748b; line-height: 1.5; margin-bottom: 12px; }
+.pd-btn { display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #0369a1, #0ea5e9); border-radius: 8px; padding: 8px 16px; font-size: 10px; font-weight: 700; color: white; box-shadow: 0 4px 14px rgba(3,105,161,0.25); }
+.pd-cards { display: flex; gap: 6px; margin: 8px 20px 0; }
+.pd-card { flex: 1; background: white; border: 1px solid #dde6f0; border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.pd-card-val { font-size: 16px; font-weight: 900; color: #0369a1; }
+.pd-card-label { font-size: 8px; color: #94a3b8; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* sel bar */
+.sel-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #111; color: white; padding: 12px 28px; border-radius: 100px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 32px rgba(0,0,0,0.25); white-space: nowrap; z-index: 999; }
+.sel-bar.on { display: block; }
+
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+</style>
+<script>
+function pick(id, name) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+  document.getElementById('sel').textContent = '✓ ' + name + ' — confirm in terminal';
+  document.getElementById('sel').classList.add('on');
+  try { fetch('/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'click',choice:id,text:name})}); } catch(e) {}
+}
+</script>
+</head>
+<body>
+
+<h1>Pick a color palette</h1>
+<p class="lead">All light themes. No dark, no indigo, no violet. Click to select.</p>
+
+<div class="grid">
+
+  <!-- A: Slate + Coral -->
+  <div class="card" id="pa" onclick="pick('pa','A — Slate + Coral')">
+    <div class="preview pa">
+      <div class="pa-nav">
+        <div class="pa-logo"></div>
+        <span class="pa-brand">DeepScan</span>
+        <div class="pa-links">
+          <span class="pa-link active">Analyze</span>
+          <span class="pa-link">Sign out</span>
+        </div>
+      </div>
+      <div class="pa-hero">
+        <div class="pa-chip"><div class="pa-dot"></div>Model Active</div>
+        <div class="pa-h1">Detect <span class="pa-accent">deepfakes</span><br>instantly.</div>
+        <div class="pa-sub">CNN+LSTM trained on SDFVD. Upload any MP4 and get a verdict in seconds.</div>
+        <div class="pa-btn">Analyze video →</div>
+      </div>
+      <div class="pa-upload">
+        <div class="pa-upload-title">Drop your video here</div>
+        <div class="pa-upload-sub">MP4 · max 100MB · drag & drop</div>
+      </div>
+      <div class="pa-result" style="margin-top:8px;">
+        <div class="pa-res-fake">
+          <div class="pa-res-label" style="color:#e85d3a;">Deepfake</div>
+          <div class="pa-res-val" style="color:#e85d3a;">FAKE</div>
+        </div>
+        <div class="pa-res-real">
+          <div class="pa-res-label" style="color:#16a34a;">Authentic</div>
+          <div class="pa-res-val" style="color:#16a34a;">REAL</div>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">A — Warm Coral</div>
+      <div class="desc">Warm off-white base (#f7f5f2), coral/terracotta accent (#e85d3a). Used by Notion, Linear. Trustworthy, professional, warm. Great for a forensic tool.</div>
+      <div class="swatches">
+        <div class="sw" style="background:#f7f5f2;border:1px solid #ddd;"></div>
+        <div class="sw" style="background:#1c1917;"></div>
+        <div class="sw" style="background:#e85d3a;"></div>
+        <div class="sw" style="background:#22c55e;"></div>
+        <div class="sw" style="background:#ef4444;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Cream + Forest Green -->
+  <div class="card" id="pb" onclick="pick('pb','B — Cream + Forest Green')">
+    <div class="preview pb">
+      <div class="pb-nav">
+        <div class="pb-logo"></div>
+        <span class="pb-brand">DeepScan</span>
+        <span class="pb-link-active">Analyze</span>
+      </div>
+      <div class="pb-hero">
+        <div class="pb-left">
+          <div class="pb-tag">AI Detection Active</div>
+          <div class="pb-h1">Find the <em class="pb-em">truth</em><br>in every frame.</div>
+          <div class="pb-sub">CNN+LSTM neural net trained on SDFVD dataset. Real-time deepfake detection.</div>
+          <div class="pb-btn">Analyze video →</div>
+        </div>
+        <div class="pb-right">
+          <div class="pb-face"><div class="pb-face-inner"></div></div>
+        </div>
+      </div>
+      <div class="pb-stats">
+        <div class="pb-stat"><div class="pb-stat-val">99%</div><div class="pb-stat-label">Accuracy</div></div>
+        <div class="pb-stat"><div class="pb-stat-val">~2s</div><div class="pb-stat-label">Per video</div></div>
+        <div class="pb-stat"><div class="pb-stat-val">30</div><div class="pb-stat-label">Frames</div></div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">B — Forest Green</div>
+      <div class="desc">Cream base (#f9f8f4), deep forest green accent (#1a4a2e). Feels authoritative, like a medical report or scientific tool. Italic serif for headlines. Used by Figma Slides, Pitch.</div>
+      <div class="swatches">
+        <div class="sw" style="background:#f9f8f4;border:1px solid #ddd;"></div>
+        <div class="sw" style="background:#1a1a1a;"></div>
+        <div class="sw" style="background:#1a4a2e;"></div>
+        <div class="sw" style="background:#22c55e;"></div>
+        <div class="sw" style="background:#ef4444;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: White + Amber -->
+  <div class="card" id="pc" onclick="pick('pc','C — White + Amber')">
+    <div class="preview pc">
+      <div class="pc-nav">
+        <div class="pc-logo"></div>
+        <span class="pc-brand">DeepScan</span>
+        <span class="pc-active">Analyze</span>
+      </div>
+      <div class="pc-hero">
+        <div class="pc-eyebrow"><div class="pc-dot"></div>Model active · CNN+LSTM</div>
+        <div class="pc-h1">Detect <span class="hl">deepfakes</span><br>in seconds.</div>
+        <div class="pc-sub">Upload any MP4. Our CNN+LSTM model returns a verdict with confidence score.</div>
+        <div class="pc-btn">Analyze video →</div>
+      </div>
+      <div class="pc-upload">
+        <div class="pc-upload-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </div>
+        <div class="pc-upload-title">Drop your video here</div>
+        <div class="pc-upload-sub">MP4 · max 100MB</div>
+      </div>
+      <div class="pc-result-row">
+        <div class="pc-fake"><div class="pc-res-l" style="color:#dc2626;">Deepfake</div><div class="pc-res-v" style="color:#dc2626;">FAKE</div></div>
+        <div class="pc-real"><div class="pc-res-l" style="color:#16a34a;">Authentic</div><div class="pc-res-v" style="color:#16a34a;">REAL</div></div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">C — Amber / Gold</div>
+      <div class="desc">Pure white base, rich amber gradient (#b45309→#d97706). Warm, premium, stands out. Like Stripe's dashboard or Apple's marketing. Bold gradient buttons and text accents.</div>
+      <div class="swatches">
+        <div class="sw" style="background:#ffffff;border:1px solid #ddd;"></div>
+        <div class="sw" style="background:#111111;"></div>
+        <div class="sw" style="background:#b45309;"></div>
+        <div class="sw" style="background:#d97706;"></div>
+        <div class="sw" style="background:#ef4444;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: Light Blue / Sky -->
+  <div class="card" id="pd" onclick="pick('pd','D — Sky Blue / Ocean')">
+    <div class="preview pd">
+      <div class="pd-nav">
+        <div class="pd-logo"></div>
+        <span class="pd-brand">DeepScan</span>
+        <span class="pd-active">Analyze</span>
+      </div>
+      <div class="pd-bg">
+        <div class="pd-eyebrow"><div class="pd-dot"></div>Live Detection</div>
+        <div class="pd-h1">Detect <span class="hl">deepfakes</span><br>instantly.</div>
+        <div class="pd-sub">CNN+LSTM · SDFVD dataset · 30 frames per analysis · real-time verdict</div>
+        <div class="pd-btn">Analyze video →</div>
+      </div>
+      <div class="pd-cards">
+        <div class="pd-card"><div class="pd-card-val">99%</div><div class="pd-card-label">Accuracy</div></div>
+        <div class="pd-card"><div class="pd-card-val">~2s</div><div class="pd-card-label">Inference</div></div>
+        <div class="pd-card"><div class="pd-card-val">30</div><div class="pd-card-label">Frames</div></div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="name">D — Sky / Ocean Blue</div>
+      <div class="desc">Light blue-grey base (#f4f7fb), bright sky blue accent (#0369a1→#0ea5e9). NOT indigo — this is cyan-leaning ocean blue. Like Tailwind's own site, or Figma's UI. Clean and technical.</div>
+      <div class="swatches">
+        <div class="sw" style="background:#f4f7fb;border:1px solid #ddd;"></div>
+        <div class="sw" style="background:#0c1a2e;"></div>
+        <div class="sw" style="background:#0369a1;"></div>
+        <div class="sw" style="background:#0ea5e9;"></div>
+        <div class="sw" style="background:#ef4444;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="sel" class="sel-bar"></div>
+
+</body>
+</html>

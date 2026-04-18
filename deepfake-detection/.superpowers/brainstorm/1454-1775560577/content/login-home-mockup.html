@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepScan — Login & Home Mockups</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; font-family: -apple-system, 'Helvetica Neue', sans-serif; color: white; padding: 28px 24px 60px; }
+h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.lead { font-size: 13px; color: #888; margin-bottom: 36px; }
+.section-title { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #666; margin-bottom: 16px; margin-top: 40px; }
+.row { display: grid; gap: 20px; }
+.row-2 { grid-template-columns: 1fr 1fr; }
+.row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.card {
+  border-radius: 16px; overflow: hidden; cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.card:hover { transform: translateY(-2px); }
+.card.selected { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,0.25); }
+
+.preview { position: relative; overflow: hidden; }
+.card-label { padding: 14px 16px; background: #1a1a1a; }
+.card-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.card-desc { font-size: 12px; color: #777; line-height: 1.45; }
+
+/* ─── BASE: dark gradient bg used by all ─── */
+.bg-base {
+  background: radial-gradient(ellipse at 30% 20%, #2d1458 0%, #0d0818 50%, #1a0a1e 100%);
+}
+
+/* ══════════════════════════════════════════
+   LOGIN OPTION L1 — Split screen, detailed
+══════════════════════════════════════════ */
+.l1 { height: 340px; display: flex; }
+
+.l1-left {
+  width: 48%;
+  background: radial-gradient(ellipse at 30% 30%, #3b1a6e 0%, #0d0818 60%);
+  display: flex; flex-direction: column; justify-content: space-between; padding: 20px;
+  position: relative; overflow: hidden;
+}
+.l1-orb1 { position: absolute; width: 160px; height: 160px; background: radial-gradient(circle, rgba(124,58,237,0.4), transparent); top: -40px; left: -40px; border-radius: 50%; filter: blur(30px); }
+.l1-orb2 { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(225,29,72,0.3), transparent); bottom: 0; right: 20px; border-radius: 50%; filter: blur(25px); }
+
+.l1-brand { position: relative; z-index: 1; }
+.l1-logo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.l1-logo-mark { width: 28px; height: 28px; background: linear-gradient(135deg, #7c3aed, #e11d48); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.l1-logo-name { font-size: 14px; font-weight: 800; letter-spacing: -0.3px; }
+
+.l1-tagline { font-size: 18px; font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 10px; }
+.l1-tagline .grad { background: linear-gradient(135deg, #a78bfa, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.l1-body { font-size: 10px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 180px; }
+
+.l1-stats { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+.l1-stat { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; }
+.l1-stat-val { font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 40px; }
+.l1-stat-info { }
+.l1-stat-label { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+.l1-stat-sub { font-size: 10px; color: rgba(255,255,255,0.6); }
+
+.l1-right {
+  flex: 1;
+  background: rgba(13,8,24,0.9);
+  border-left: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.l1-form { width: 100%; }
+.l1-form-title { font-size: 16px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
+.l1-form-sub { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 18px; }
+.l1-field { margin-bottom: 10px; }
+.l1-field-label { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; }
+.l1-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 11px; font-size: 11px; color: rgba(255,255,255,0.8); }
+.l1-btn { width: 100%; background: linear-gradient(135deg, #7c3aed, #e11d48); border: none; border-radius: 8px; padding: 9px; font-size: 11px; font-weight: 700; color: white; margin-top: 4px; cursor: pointer; }
+.l1-divider { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.l1-div-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+.l1-div-text { font-size: 9px; color: rgba(255,255,255,0.25); }
+.l1-roles { display: flex; gap: 6px; }
+.l1-role { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 6px 8px; text-align: center; }
+.l1-role-name { font-size: 10px; font-weight: 700; margin-bottom: 1px; }
+.l1-role-sub { font-size: 8px; color: rgba(255,255,255,0.35); }
+
+/* ══════════════════════════════════════════
+   HOME BG OPTION H1 — Floating Orbs
+══════════════════════════════════════════ */
+.h1-bg { height: 220px; position: relative; overflow: hidden; background: #0d0818; }
+.h1-orb { position: absolute; border-radius: 50%; filter: blur(40px); }
+.h1-o1 { width: 220px; height: 220px; background: radial-gradient(circle, rgba(124,58,237,0.5), transparent); top: -60px; left: -40px; animation: drift1 8s ease-in-out infinite alternate; }
+.h1-o2 { width: 180px; height: 180px; background: radial-gradient(circle, rgba(225,29,72,0.4), transparent); bottom: -40px; right: 10%; animation: drift2 9s ease-in-out infinite alternate; }
+.h1-o3 { width: 140px; height: 140px; background: radial-gradient(circle, rgba(8,145,178,0.3), transparent); top: 20px; right: 30%; animation: drift3 7s ease-in-out infinite alternate; }
+.h1-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); opacity: 0.4; }
+.h1-content { position: relative; z-index: 1; padding: 24px; }
+.h1-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+.h1-pulse { width: 5px; height: 5px; background: #10b981; border-radius: 50%; box-shadow: 0 0 6px #10b981; animation: pulse 2s ease-in-out infinite; }
+.h1-headline { font-size: 28px; font-weight: 900; line-height: 1.05; letter-spacing: -0.8px; margin-bottom: 6px; }
+.h1-headline .grad { background: linear-gradient(135deg, #a78bfa 0%, #fb7185 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.h1-sub { font-size: 11px; color: rgba(255,255,255,0.45); max-width: 280px; line-height: 1.5; margin-bottom: 14px; }
+.h1-btn { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #7c3aed, #e11d48); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 700; color: white; }
+
+@keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, 20px) scale(1.1); } }
+@keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-20px, -15px) scale(1.05); } }
+@keyframes drift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(15px, 25px) scale(0.95); } }
+@keyframes pulse { 0%,100%{box-shadow:0 0 6px #10b981;} 50%{box-shadow:0 0 12px #10b981, 0 0 20px rgba(16,185,129,0.4);} }
+
+/* ══════════════════════════════════════════
+   HOME BG OPTION H2 — Mesh Gradient + Grid
+══════════════════════════════════════════ */
+.h2-bg { height: 220px; position: relative; overflow: hidden;
+  background: conic-gradient(from 230deg at 50% 50%, #1a0a3e 0%, #2d0a1e 25%, #0d1a3e 50%, #1a0a3e 75%, #2d0a1e 100%);
+}
+.h2-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px); background-size: 32px 32px; }
+.h2-glow { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-60%); }
+.h2-content { position: relative; z-index: 1; padding: 24px; }
+.h2-chip { display: inline-flex; align-items: center; gap: 5px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); border-radius: 20px; padding: 3px 10px; font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #a78bfa; margin-bottom: 10px; }
+.h2-dot { width: 4px; height: 4px; background: #10b981; border-radius: 50%; }
+.h2-headline { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; line-height: 1.05; margin-bottom: 6px; }
+.h2-word1 { color: white; }
+.h2-word2 { background: linear-gradient(135deg, #a78bfa, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.h2-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+.h2-btn { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(124,58,237,0.5); background: rgba(124,58,237,0.15); border-radius: 8px; padding: 7px 14px; font-size: 11px; font-weight: 600; color: #a78bfa; }
+
+/* ══════════════════════════════════════════
+   HOME BG OPTION H3 — Particle + Scanlines
+══════════════════════════════════════════ */
+.h3-bg { height: 220px; position: relative; overflow: hidden; background: #08040f; }
+.h3-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(124,58,237,0.02) 2px, rgba(124,58,237,0.02) 4px); }
+.h3-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(8,4,15,0.8) 100%); }
+.h3-glow-l { position: absolute; left: -40px; top: 0; bottom: 0; width: 200px; background: linear-gradient(90deg, rgba(124,58,237,0.2), transparent); }
+.h3-glow-r { position: absolute; right: -40px; top: 0; bottom: 0; width: 200px; background: linear-gradient(-90deg, rgba(225,29,72,0.15), transparent); }
+.h3-dots { position: absolute; inset: 0; }
+.h3-dot { position: absolute; width: 2px; height: 2px; background: rgba(167,139,250,0.6); border-radius: 50%; animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s); }
+.h3-content { position: relative; z-index: 1; padding: 24px; display: flex; align-items: center; gap: 24px; height: 100%; }
+.h3-left { flex: 1; }
+.h3-label { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(167,139,250,0.6); margin-bottom: 8px; }
+.h3-headline { font-size: 30px; font-weight: 900; letter-spacing: -0.8px; line-height: 1.0; margin-bottom: 8px; }
+.h3-headline .line1 { color: white; display: block; }
+.h3-headline .line2 { background: linear-gradient(90deg, #a78bfa, #fb7185, #a78bfa); background-size: 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; animation: shimmer 3s linear infinite; }
+.h3-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 14px; }
+.h3-btn { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #7c3aed, #e11d48); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
+.h3-right { width: 90px; text-align: right; }
+.h3-badge { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25); border-radius: 8px; padding: 8px; margin-bottom: 6px; }
+.h3-badge-val { font-size: 18px; font-weight: 900; background: linear-gradient(135deg, #a78bfa, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.h3-badge-label { font-size: 8px; color: rgba(255,255,255,0.35); }
+@keyframes twinkle { 0%,100%{opacity:0.3;transform:scale(1);} 50%{opacity:1;transform:scale(1.5);} }
+@keyframes shimmer { 0%{background-position:0% 50%;} 100%{background-position:200% 50%;} }
+
+/* selected bar */
+.sel-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #7c3aed, #e11d48); color: white; padding: 12px 28px; border-radius: 100px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 24px rgba(124,58,237,0.5); z-index: 999; white-space: nowrap; }
+.sel-bar.on { display: block; }
+
+@media (max-width: 700px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+</style>
+<script>
+const selections = {};
+function pick(group, id, label) {
+  document.querySelectorAll('.card[data-group="'+group+'"]').forEach(c => c.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+  selections[group] = label;
+  const bar = document.getElementById('sel');
+  const parts = Object.entries(selections).map(([g,l]) => l).join(' + ');
+  bar.textContent = '✓ Selected: ' + parts + ' — confirm in terminal';
+  bar.classList.add('on');
+  try { fetch('/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'click',choice:id,text:label})}); } catch(e){}
+}
+</script>
+</head>
+<body>
+
+<h1>Login Screen & Home Background</h1>
+<p class="lead" style="color:#666;font-size:13px;margin-bottom:0;">Two independent choices. Click to select each — then confirm in the terminal.</p>
+
+<!-- ── LOGIN ── -->
+<div class="section-title">① Login Screen Layout</div>
+<div class="row row-2">
+
+  <div class="card" id="l1" data-group="login" onclick="pick('login','l1','Login: Split + Stats Panel')">
+    <div class="preview">
+      <div class="l1">
+        <div class="l1-left">
+          <div class="l1-orb1"></div><div class="l1-orb2"></div>
+          <div class="l1-brand">
+            <div class="l1-logo-row">
+              <div class="l1-logo-mark">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+              </div>
+              <span class="l1-logo-name">DeepScan</span>
+            </div>
+            <div class="l1-tagline">Every frame<br>holds a <span class="grad">secret.</span></div>
+            <div class="l1-body">CNN+LSTM neural network trained on the SDFVD dataset. Real-time deepfake detection.</div>
+          </div>
+          <div class="l1-stats">
+            <div class="l1-stat">
+              <div class="l1-stat-val">99%</div>
+              <div class="l1-stat-info"><div class="l1-stat-label">Detection Rate</div><div class="l1-stat-sub">on SDFVD test set</div></div>
+            </div>
+            <div class="l1-stat">
+              <div class="l1-stat-val">~2s</div>
+              <div class="l1-stat-info"><div class="l1-stat-label">Inference Time</div><div class="l1-stat-sub">per video analysis</div></div>
+            </div>
+            <div class="l1-stat">
+              <div class="l1-stat-val">30</div>
+              <div class="l1-stat-info"><div class="l1-stat-label">Frames Sampled</div><div class="l1-stat-sub">CNN feature extraction</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="l1-right">
+          <div class="l1-form">
+            <div class="l1-form-title">Welcome back</div>
+            <div class="l1-form-sub">Sign in to your account</div>
+            <div class="l1-field">
+              <div class="l1-field-label">Username</div>
+              <div class="l1-input" style="color:rgba(255,255,255,0.3);">admin</div>
+            </div>
+            <div class="l1-field">
+              <div class="l1-field-label">Password</div>
+              <div class="l1-input" style="color:rgba(255,255,255,0.3);">••••••••</div>
+            </div>
+            <div class="l1-btn">Continue →</div>
+            <div class="l1-divider"><div class="l1-div-line"></div><div class="l1-div-text">ACCOUNTS</div><div class="l1-div-line"></div></div>
+            <div class="l1-roles">
+              <div class="l1-role"><div class="l1-role-name" style="color:#a78bfa;">Admin</div><div class="l1-role-sub">Full access</div></div>
+              <div class="l1-role"><div class="l1-role-name" style="color:#fb7185;">User</div><div class="l1-role-sub">Analyze only</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="card-name">Split Screen — Stats + Form</div>
+      <div class="card-desc">Left panel: animated orbs + model stats (accuracy, speed, frames) in glass cards. Right: clean form with role hint. Orbs drift in CSS animation.</div>
+    </div>
+  </div>
+
+  <div class="card" id="l2" data-group="login" onclick="pick('login','l2','Login: Centered Card + Background Scan')">
+    <div class="preview">
+      <div style="height:340px;background:radial-gradient(ellipse at 60% 30%, #2d1458 0%, #0d0818 55%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <!-- scan lines -->
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(124,58,237,0.03) 3px,rgba(124,58,237,0.03) 4px);"></div>
+        <!-- face outline bg -->
+        <div style="position:absolute;width:180px;height:220px;border:1px solid rgba(124,58,237,0.12);border-radius:50% 50% 45% 45%;top:20px;right:30px;"></div>
+        <div style="position:absolute;width:140px;height:170px;border:1px solid rgba(124,58,237,0.08);border-radius:50% 50% 45% 45%;top:40px;right:50px;"></div>
+        <!-- corner marks -->
+        <div style="position:absolute;top:12px;left:12px;width:20px;height:20px;border-top:1.5px solid rgba(124,58,237,0.4);border-left:1.5px solid rgba(124,58,237,0.4);"></div>
+        <div style="position:absolute;top:12px;right:12px;width:20px;height:20px;border-top:1.5px solid rgba(124,58,237,0.4);border-right:1.5px solid rgba(124,58,237,0.4);"></div>
+        <div style="position:absolute;bottom:12px;left:12px;width:20px;height:20px;border-bottom:1.5px solid rgba(124,58,237,0.4);border-left:1.5px solid rgba(124,58,237,0.4);"></div>
+        <div style="position:absolute;bottom:12px;right:12px;width:20px;height:20px;border-bottom:1.5px solid rgba(124,58,237,0.4);border-right:1.5px solid rgba(124,58,237,0.4);"></div>
+        <!-- centered card -->
+        <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:24px 22px;width:200px;position:relative;z-index:1;">
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#e11d48);border-radius:10px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+            </div>
+            <div style="font-size:15px;font-weight:800;letter-spacing:-0.3px;">DeepScan</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px;">Deepfake Detection Platform</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;margin-bottom:8px;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:3px;letter-spacing:0.06em;text-transform:uppercase;">Username</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);">admin</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;margin-bottom:10px;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:3px;letter-spacing:0.06em;text-transform:uppercase;">Password</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.4);">••••••••</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#7c3aed,#e11d48);border-radius:8px;padding:8px;text-align:center;font-size:10px;font-weight:700;">Sign in</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:10px;">
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
+            <span style="font-size:8px;color:rgba(255,255,255,0.2);">TWO ROLES</span>
+            <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
+          </div>
+          <div style="display:flex;gap:5px;margin-top:8px;">
+            <div style="flex:1;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);border-radius:6px;padding:5px;text-align:center;">
+              <div style="font-size:9px;font-weight:700;color:#a78bfa;">admin</div>
+              <div style="font-size:7px;color:rgba(255,255,255,0.3);">all access</div>
+            </div>
+            <div style="flex:1;background:rgba(225,29,72,0.1);border:1px solid rgba(225,29,72,0.2);border-radius:6px;padding:5px;text-align:center;">
+              <div style="font-size:9px;font-weight:700;color:#fb7185;">user</div>
+              <div style="font-size:7px;color:rgba(255,255,255,0.3);">analyze only</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="card-name">Centered Card — Biometric Background</div>
+      <div class="card-desc">Floating glass card centered over a deep purple bg with scan-line texture, face outline rings, and corner bracket overlays. Very "security system" feel.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── HOME BACKGROUND ── -->
+<div class="section-title">② Home Page Animated Background</div>
+<div class="row row-3">
+
+  <div class="card" id="h1" data-group="home" onclick="pick('home','h1','Home BG: Floating Orbs')">
+    <div class="preview">
+      <div class="h1-bg">
+        <div class="h1-orb h1-o1"></div>
+        <div class="h1-orb h1-o2"></div>
+        <div class="h1-orb h1-o3"></div>
+        <div class="h1-noise"></div>
+        <div class="h1-content">
+          <div class="h1-eyebrow"><div class="h1-pulse"></div>Model active · CNN+LSTM</div>
+          <div class="h1-headline">Detect <span class="grad">deepfakes</span><br>instantly.</div>
+          <div class="h1-sub">Upload any MP4 video — get verdict in seconds.</div>
+          <div class="h1-btn">Analyze video →</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="card-name">Floating Orbs (Subtle)</div>
+      <div class="card-desc">3 blurred orbs (violet, rose, teal) drift slowly via CSS keyframes. Noise texture overlay. Feels alive but doesn't compete with content. Used by Vercel, Luma.</div>
+    </div>
+  </div>
+
+  <div class="card" id="h2" data-group="home" onclick="pick('home','h2','Home BG: Mesh Grid + Glow')">
+    <div class="preview">
+      <div class="h2-bg">
+        <div class="h2-grid"></div>
+        <div class="h2-glow"></div>
+        <div class="h2-content">
+          <div class="h2-chip"><div class="h2-dot"></div>Live Detection</div>
+          <div class="h2-headline"><span class="h2-word1">Detect </span><span class="h2-word2">deepfakes</span><br><span class="h2-word1">instantly.</span></div>
+          <div class="h2-sub">CNN+LSTM · SDFVD Dataset · Real-time analysis</div>
+          <div class="h2-btn">Analyze video →</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="card-name">Mesh Grid + Center Glow</div>
+      <div class="card-desc">Subtle purple grid lines on deep background with a radial glow at center. Conic gradient base. Static but very premium. Used by Raycast, Linear, Resend.</div>
+    </div>
+  </div>
+
+  <div class="card" id="h3" data-group="home" onclick="pick('home','h3','Home BG: Scanlines + Edge Glow')">
+    <div class="preview">
+      <div class="h3-bg">
+        <div class="h3-scan"></div>
+        <div class="h3-vignette"></div>
+        <div class="h3-glow-l"></div>
+        <div class="h3-glow-r"></div>
+        <div class="h3-dots">
+          <div class="h3-dot" style="left:15%;top:20%;--d:4s;--delay:0s;"></div>
+          <div class="h3-dot" style="left:40%;top:60%;--d:3s;--delay:0.5s;"></div>
+          <div class="h3-dot" style="left:70%;top:30%;--d:5s;--delay:1s;"></div>
+          <div class="h3-dot" style="left:85%;top:70%;--d:3.5s;--delay:0.2s;"></div>
+          <div class="h3-dot" style="left:25%;top:80%;--d:4.5s;--delay:1.5s;"></div>
+          <div class="h3-dot" style="left:60%;top:15%;--d:3.8s;--delay:0.8s;"></div>
+          <div class="h3-dot" style="left:90%;top:45%;--d:4.2s;--delay:1.2s;"></div>
+          <div class="h3-dot" style="left:5%;top:55%;--d:3.2s;--delay:0.3s;"></div>
+        </div>
+        <div class="h3-content">
+          <div class="h3-left">
+            <div class="h3-label">Deepfake Detection · Real-time</div>
+            <div class="h3-headline">
+              <span class="line1">Detect</span>
+              <span class="line2">deepfakes.</span>
+            </div>
+            <div class="h3-sub">CNN+LSTM · 30 frames · SDFVD trained</div>
+            <div class="h3-btn">Analyze video →</div>
+          </div>
+          <div class="h3-right">
+            <div class="h3-badge"><div class="h3-badge-val">99%</div><div class="h3-badge-label">Accuracy</div></div>
+            <div class="h3-badge"><div class="h3-badge-val">~2s</div><div class="h3-badge-label">Per video</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="card-name">Scanlines + Twinkling Particles</div>
+      <div class="card-desc">Horizontal scanlines + edge glow (violet left, rose right) + randomly twinkling micro-dots. Most dramatic. Feels like a live security feed. Inspired by Framer, Clerk.</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="sel" class="sel-bar"></div>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepScan – Design Directions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f2f1ef; font-family: -apple-system, 'Helvetica Neue', sans-serif; padding: 32px 24px; color: #111; }
+  h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px; }
+  .lead { font-size: 14px; color: #555; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .card.selected { border-color: #0066ff; box-shadow: 0 0 0 4px rgba(0,102,255,0.15); }
+  .preview { height: 260px; position: relative; overflow: hidden; }
+  .card-body { padding: 18px 20px 20px; }
+  .card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 6px; }
+  .card-desc { font-size: 13px; color: #666; line-height: 1.55; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; margin-bottom: 10px; }
+  .selected-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0066ff; color: white; padding: 12px 28px; border-radius: 100px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,102,255,0.4); }
+  .selected-bar.visible { display: block; }
+
+  /* ── Option A: Warm Editorial ── */
+  .preview-a {
+    background: #fdf8f0;
+    display: flex; flex-direction: column; padding: 20px;
+  }
+  .a-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+  .a-logo { width: 24px; height: 24px; background: #1a1a1a; border-radius: 6px; }
+  .a-navtext { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+  .a-navlinks { display: flex; gap: 16px; margin-left: auto; }
+  .a-navlink { font-size: 11px; color: #888; }
+  .a-hero { flex: 1; display: flex; align-items: center; gap: 16px; }
+  .a-left { flex: 1; }
+  .a-tag { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #b07d40; background: #fdefd8; padding: 3px 8px; border-radius: 3px; display: inline-block; margin-bottom: 10px; }
+  .a-h1 { font-size: 22px; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px; color: #1a1a1a; margin-bottom: 8px; font-style: normal; }
+  .a-h1 em { font-style: italic; color: #b07d40; }
+  .a-sub { font-size: 10px; color: #888; line-height: 1.5; margin-bottom: 12px; }
+  .a-btn { display: inline-block; background: #1a1a1a; color: white; font-size: 10px; font-weight: 600; padding: 7px 14px; border-radius: 6px; }
+  .a-right { width: 110px; height: 100px; background: #f0ebe2; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid #e0d8cc; }
+  .a-face { width: 50px; height: 60px; border: 1.5px solid #c8a870; border-radius: 50% 50% 45% 45%; position: relative; }
+  .a-face::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; height: 1px; background: #c8a870; opacity: 0.5; }
+
+  /* ── Option B: Glass / Luxury ── */
+  .preview-b {
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0e8ff 50%, #ffe8f0 100%);
+    display: flex; flex-direction: column; padding: 20px; position: relative;
+  }
+  .b-blur1 { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(120,80,255,0.25), transparent); top: -20px; right: 20px; border-radius: 50%; filter: blur(20px); }
+  .b-blur2 { position: absolute; width: 80px; height: 80px; background: radial-gradient(circle, rgba(0,180,255,0.2), transparent); bottom: 20px; left: 20px; border-radius: 50%; filter: blur(16px); }
+  .b-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; position: relative; z-index: 1; }
+  .b-logo { width: 24px; height: 24px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 7px; border: 1px solid rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; }
+  .b-dot { width: 8px; height: 8px; background: linear-gradient(135deg, #7850ff, #00b4ff); border-radius: 2px; }
+  .b-navtext { font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #7850ff, #00b4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .b-hero { position: relative; z-index: 1; text-align: center; padding-top: 10px; }
+  .b-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.9); border-radius: 20px; font-size: 9px; font-weight: 600; color: #7850ff; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  .b-dot2 { width: 5px; height: 5px; background: #00d68f; border-radius: 50%; }
+  .b-h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; background: linear-gradient(135deg, #1a1a2e, #7850ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  .b-card { background: rgba(255,255,255,0.55); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.85); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .b-upload-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #7850ff, #00b4ff); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .b-upload-text { font-size: 10px; }
+  .b-upload-title { font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+  .b-upload-sub { color: #888; }
+
+  /* ── Option C: Bold Typographic ── */
+  .preview-c {
+    background: #fff;
+    display: flex; flex-direction: column; padding: 0; overflow: hidden;
+  }
+  .c-topbar { background: #ff3b30; padding: 6px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .c-logo { font-size: 12px; font-weight: 900; color: white; letter-spacing: -0.3px; }
+  .c-navlinks { display: flex; gap: 12px; }
+  .c-navlink { font-size: 9px; color: rgba(255,255,255,0.8); font-weight: 500; }
+  .c-hero { padding: 20px 20px 16px; border-bottom: 2px solid #111; }
+  .c-kicker { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #ff3b30; margin-bottom: 6px; }
+  .c-headline { font-size: 28px; font-weight: 900; line-height: 0.95; letter-spacing: -1px; color: #111; margin-bottom: 10px; }
+  .c-byline { font-size: 10px; color: #888; margin-bottom: 12px; font-style: italic; }
+  .c-btn { display: inline-block; border: 2px solid #111; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; color: #111; }
+  .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; flex: 1; }
+  .c-cell { padding: 12px 16px; border-top: 1px solid #eee; }
+  .c-cell:nth-child(odd) { border-right: 1px solid #eee; }
+  .c-cell-label { font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #ff3b30; margin-bottom: 4px; }
+  .c-cell-val { font-size: 18px; font-weight: 900; color: #111; letter-spacing: -0.5px; }
+  .c-cell-sub { font-size: 8px; color: #888; }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+<script>
+  let selected = null;
+  function selectCard(id, label) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(id).classList.add('selected');
+    selected = id;
+    const bar = document.getElementById('sel-bar');
+    bar.textContent = '✓ Selected: ' + label + ' — reply in terminal to confirm';
+    bar.classList.add('visible');
+    // emit event
+    try {
+      fetch('/event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({type:'click', choice: id, text: label}) });
+    } catch(e) {}
+  }
+</script>
+</head>
+<body>
+<h1>Which design direction feels right?</h1>
+<p class="lead">Three completely different approaches for DeepScan. Click to select, then tell me what you think in the terminal.</p>
+
+<div class="grid">
+
+  <!-- Option A -->
+  <div class="card" id="opt-a" onclick="selectCard('opt-a','A – Warm Editorial')">
+    <div class="preview preview-a">
+      <div class="a-nav">
+        <div class="a-logo"></div>
+        <span class="a-navtext">DeepScan</span>
+        <div class="a-navlinks">
+          <span class="a-navlink">Analyze</span>
+          <span class="a-navlink">Sign out</span>
+        </div>
+      </div>
+      <div class="a-hero">
+        <div class="a-left">
+          <div class="a-tag">AI Detection · Active</div>
+          <div class="a-h1">Find the<br><em>truth</em> in<br>every frame.</div>
+          <div class="a-sub">CNN+LSTM model trained on SDFVD.<br>Upload MP4 → get verdict in seconds.</div>
+          <div class="a-btn">Analyze Video →</div>
+        </div>
+        <div class="a-right">
+          <div class="a-face"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="tag" style="background:#fdefd8;color:#b07d40;">Warm Editorial</span>
+      <div class="card-title">Option A — Premium & Trustworthy</div>
+      <div class="card-desc">Cream/sand tones, editorial serif headers, warm amber accents. Inspired by Stripe, Linear, Notion. Feels like a serious forensic tool. Smooth scroll-triggered reveals, parallax depth on hero.</div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" id="opt-b" onclick="selectCard('opt-b','B – Glassmorphism Premium')">
+    <div class="preview preview-b">
+      <div class="b-blur1"></div>
+      <div class="b-blur2"></div>
+      <div class="b-nav">
+        <div class="b-logo"><div class="b-dot"></div></div>
+        <span class="b-navtext">DeepScan</span>
+      </div>
+      <div class="b-hero">
+        <div class="b-pill"><div class="b-dot2"></div>Model active</div>
+        <div class="b-h1">Detect deepfakes<br>in seconds.</div>
+        <div class="b-card">
+          <div class="b-upload-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="b-upload-text">
+            <div class="b-upload-title">Drop your video here</div>
+            <div class="b-upload-sub">MP4 · CNN+LSTM analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="tag" style="background:#f0e8ff;color:#7850ff;">Glass / Luxury</span>
+      <div class="card-title">Option B — Vivid & Modern</div>
+      <div class="card-desc">Soft lavender-to-pink gradient backgrounds, frosted glass cards, purple/blue accents. Inspired by Vercel, Resend, Arc. Feels cutting-edge. Animated gradient mesh + floating glass panels.</div>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" id="opt-c" onclick="selectCard('opt-c','C – Bold Typographic')">
+    <div class="preview preview-c">
+      <div class="c-topbar">
+        <span class="c-logo">DEEPSCAN</span>
+        <div class="c-navlinks">
+          <span class="c-navlink">Analyze</span>
+          <span class="c-navlink">Pipeline</span>
+          <span class="c-navlink">Admin</span>
+        </div>
+      </div>
+      <div class="c-hero">
+        <div class="c-kicker">Deepfake Detection · Real-time</div>
+        <div class="c-headline">IS IT<br>REAL?</div>
+        <div class="c-byline">CNN+LSTM · SDFVD Dataset · 99%+ Accuracy</div>
+        <div class="c-btn">ANALYZE NOW</div>
+      </div>
+      <div class="c-grid">
+        <div class="c-cell">
+          <div class="c-cell-label">Detection Rate</div>
+          <div class="c-cell-val">99%</div>
+          <div class="c-cell-sub">on SDFVD test set</div>
+        </div>
+        <div class="c-cell">
+          <div class="c-cell-label">Inference Time</div>
+          <div class="c-cell-val">~2s</div>
+          <div class="c-cell-sub">per video</div>
+        </div>
+        <div class="c-cell">
+          <div class="c-cell-label">Architecture</div>
+          <div class="c-cell-val">CNN</div>
+          <div class="c-cell-sub">+LSTM layers</div>
+        </div>
+        <div class="c-cell">
+          <div class="c-cell-label">Frames</div>
+          <div class="c-cell-val">30</div>
+          <div class="c-cell-sub">per analysis</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <span class="tag" style="background:#fff0ee;color:#ff3b30;">Bold / Editorial</span>
+      <div class="card-title">Option C — Striking & Confident</div>
+      <div class="card-desc">Bold black headlines, red accent bar, newspaper-grid layout. Inspired by The Verge, Bloomberg, Figma. Commanding and memorable. Large kinetic typography, bold hover states, counter animations.</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="sel-bar" class="selected-bar"></div>
+
+</body>
+</html>

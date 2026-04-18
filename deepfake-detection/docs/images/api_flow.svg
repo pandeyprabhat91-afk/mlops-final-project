@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="960" height="480">
+  <style>text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }</style>
+  <defs>
+    <marker id="ab" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/></marker>
+    <marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+  </defs>
+  <rect width="960" height="480" fill="#ffffff"/>
+  <text x="480" y="32" text-anchor="middle" font-size="18" font-weight="600" fill="#111827">POST /predict — API Request Sequence</text>
+  <rect x="60" y="48" width="120" height="40" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="120" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Client / Browser</text>
+  <line x1="120" y1="88" x2="120" y2="440" stroke="#d1d5db" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="230" y="48" width="120" height="40" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="290" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Nginx :3000</text>
+  <line x1="290" y1="88" x2="290" y2="440" stroke="#d1d5db" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="400" y="48" width="120" height="40" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="460" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">FastAPI :8000</text>
+  <line x1="460" y1="88" x2="460" y2="440" stroke="#d1d5db" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="570" y="48" width="120" height="40" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="630" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">ML Model</text>
+  <line x1="630" y1="88" x2="630" y2="440" stroke="#d1d5db" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="740" y="48" width="120" height="40" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="800" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Prometheus</text>
+  <line x1="800" y1="88" x2="800" y2="440" stroke="#d1d5db" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="454" y="140" width="12" height="220" rx="2" fill="#dbeafe"/>
+  <line x1="120" y1="115" x2="286" y2="115" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="126.25" y="102" width="157.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="205" y="113" text-anchor="middle" font-size="11" fill="#2563eb">POST /api/predict (MP4)</text>
+  <line x1="290" y1="140" x2="456" y2="140" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="322.25" y="127" width="105.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="375" y="138" text-anchor="middle" font-size="11" fill="#2563eb">forward request</text>
+  <line x1="460" y1="165" x2="626" y2="165" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="482.5" y="152" width="125.0" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="163" text-anchor="middle" font-size="11" fill="#2563eb">preprocess_video()</text>
+  <line x1="630" y1="190" x2="464" y2="190" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <rect x="472.75" y="177" width="144.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="188" text-anchor="middle" font-size="11" fill="#16a34a">tensor (30,3,224,224)</text>
+  <line x1="460" y1="215" x2="626" y2="215" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="472.75" y="202" width="144.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="213" text-anchor="middle" font-size="11" fill="#2563eb">model.predict(tensor)</text>
+  <line x1="630" y1="240" x2="464" y2="240" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <rect x="489.0" y="227" width="112.0" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="238" text-anchor="middle" font-size="11" fill="#16a34a">confidence: 0.94</text>
+  <line x1="460" y1="265" x2="626" y2="265" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="482.5" y="252" width="125.0" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="263" text-anchor="middle" font-size="11" fill="#2563eb">generate_gradcam()</text>
+  <line x1="630" y1="290" x2="464" y2="290" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <rect x="508.5" y="277" width="73.0" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="545" y="288" text-anchor="middle" font-size="11" fill="#16a34a">base64 PNG</text>
+  <line x1="460" y1="315" x2="796" y2="315" stroke="#2563eb" stroke-width="1.5"  marker-end="url(#ab)"/>
+  <rect x="577.25" y="302" width="105.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="630" y="313" text-anchor="middle" font-size="11" fill="#2563eb">update /metrics</text>
+  <line x1="460" y1="340" x2="294" y2="340" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <rect x="306.0" y="327" width="138.0" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="375" y="338" text-anchor="middle" font-size="11" fill="#16a34a">PredictResponse JSON</text>
+  <line x1="290" y1="365" x2="124" y2="365" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <rect x="152.25" y="352" width="105.5" height="14" rx="2" fill="#ffffff" opacity="0.95"/>
+  <text x="205" y="363" text-anchor="middle" font-size="11" fill="#16a34a">200 OK + result</text>
+  <rect x="20" y="400" width="260" height="64" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="36" y="418" font-size="12" font-weight="600" fill="#374151">Legend</text>
+  <line x1="36" y1="434" x2="70" y2="434" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ab)"/>
+  <text x="78" y="438" font-size="12" fill="#6b7280">Request / call</text>
+  <line x1="36" y1="454" x2="70" y2="454" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ag)"/>
+  <text x="78" y="458" font-size="12" fill="#6b7280">Response / return</text>
+</svg>

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" width="960" height="720">
+  <style>text { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }</style>
+  <defs>
+    <marker id="ab" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/></marker>
+    <marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ap" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9333ea"/></marker>
+  </defs>
+  <rect width="960" height="720" fill="#ffffff"/>
+  <text x="480" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#111827">Deepfake Detection — System Architecture</text>
+  <rect x="16" y="55" width="928" height="80" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="28" y="73" font-size="11" fill="#6b7280" font-weight="600">CLIENT LAYER</text>
+  <rect x="380" y="65" width="200" height="58" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="380" y="65" width="200" height="16" rx="8" fill="#dbeafe" stroke="#d1d5db" stroke-width="0"/>
+  <circle cx="394" cy="73" r="4" fill="#ef4444"/><circle cx="406" cy="73" r="4" fill="#f59e0b"/><circle cx="418" cy="73" r="4" fill="#22c55e"/>
+  <text x="480" y="101" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">React Frontend</text>
+  <text x="480" y="116" text-anchor="middle" font-size="11" fill="#6b7280">Nginx port 3000</text>
+  <rect x="16" y="148" width="928" height="80" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="28" y="166" font-size="11" fill="#6b7280" font-weight="600">GATEWAY / API LAYER</text>
+  <rect x="380" y="158" width="200" height="58" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="380" y="158" width="200" height="14" rx="4" fill="#dcfce7" stroke="none"/>
+  <text x="480" y="190" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">FastAPI Backend</text>
+  <text x="480" y="207" text-anchor="middle" font-size="11" fill="#6b7280">port 8000 — /predict /health /metrics</text>
+  <rect x="16" y="242" width="928" height="88" rx="8" fill="#faf5ff" stroke="#ede9fe" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="28" y="260" font-size="11" fill="#6b7280" font-weight="600">ML SERVICES LAYER</text>
+  <rect x="120" y="254" width="180" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="120" y="254" width="180" height="14" rx="4" fill="#ede9fe" stroke="none"/>
+  <text x="210" y="286" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">MLflow Server</text>
+  <text x="210" y="303" text-anchor="middle" font-size="11" fill="#6b7280">Tracking + Registry port 5000</text>
+  <rect x="390" y="254" width="180" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="390" y="254" width="180" height="14" rx="4" fill="#ede9fe" stroke="none"/>
+  <text x="480" y="286" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">Apache Airflow</text>
+  <text x="480" y="303" text-anchor="middle" font-size="11" fill="#6b7280">DAG Orchestration port 8080</text>
+  <rect x="660" y="254" width="180" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="660" y="254" width="180" height="14" rx="4" fill="#ede9fe" stroke="none"/>
+  <text x="750" y="286" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">DVC Pipeline</text>
+  <text x="750" y="303" text-anchor="middle" font-size="11" fill="#6b7280">Data and Model Versioning</text>
+  <rect x="16" y="345" width="928" height="88" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="28" y="363" font-size="11" fill="#6b7280" font-weight="600">DATA AND STORAGE LAYER</text>
+  <rect x="60" y="357" width="160" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="60" y="357" width="160" height="14" rx="4" fill="#fed7aa" stroke="none"/>
+  <text x="140" y="387" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">PostgreSQL</text>
+  <text x="140" y="403" text-anchor="middle" font-size="11" fill="#6b7280">Airflow metadata DB</text>
+  <rect x="280" y="357" width="160" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="280" y="357" width="160" height="14" rx="4" fill="#fed7aa" stroke="none"/>
+  <text x="360" y="387" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">MLflow Artifacts</text>
+  <text x="360" y="403" text-anchor="middle" font-size="11" fill="#6b7280">Model files and run data</text>
+  <rect x="500" y="357" width="160" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="500" y="357" width="160" height="14" rx="4" fill="#fed7aa" stroke="none"/>
+  <text x="580" y="387" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">DVC Storage</text>
+  <text x="580" y="403" text-anchor="middle" font-size="11" fill="#6b7280">Raw MP4 and features</text>
+  <rect x="720" y="357" width="160" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="720" y="357" width="160" height="14" rx="4" fill="#fed7aa" stroke="none"/>
+  <text x="800" y="387" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">Git Repository</text>
+  <text x="800" y="403" text-anchor="middle" font-size="11" fill="#6b7280">Code and Git LFS</text>
+  <rect x="16" y="448" width="928" height="88" rx="8" fill="#fef2f2" stroke="#fecaca" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="28" y="466" font-size="11" fill="#6b7280" font-weight="600">MONITORING LAYER</text>
+  <rect x="200" y="460" width="180" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="200" y="460" width="180" height="14" rx="4" fill="#fee2e2" stroke="none"/>
+  <text x="290" y="491" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">Prometheus</text>
+  <text x="290" y="508" text-anchor="middle" font-size="11" fill="#6b7280">Metrics scraping port 9090</text>
+  <rect x="580" y="460" width="180" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <rect x="580" y="460" width="180" height="14" rx="4" fill="#fee2e2" stroke="none"/>
+  <text x="670" y="491" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">Grafana</text>
+  <text x="670" y="508" text-anchor="middle" font-size="11" fill="#6b7280">NRT dashboards port 3001</text>
+  <line x1="480" y1="123" x2="480" y2="158" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+  <rect x="448" y="135" width="64" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="480" y="147" text-anchor="middle" font-size="11" fill="#2563eb">REST /api/*</text>
+  <path d="M 430,216 L 430,240 L 300,240 L 300,254" stroke="#2563eb" stroke-width="1.5" fill="none" marker-end="url(#ab)"/>
+  <rect x="330" y="232" width="68" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="364" y="244" text-anchor="middle" font-size="11" fill="#2563eb">load model</text>
+  <line x1="480" y1="216" x2="480" y2="254" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+  <rect x="444" y="229" width="72" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="480" y="241" text-anchor="middle" font-size="11" fill="#ea580c">DAG trigger</text>
+  <line x1="570" y1="286" x2="660" y2="286" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ag)"/>
+  <rect x="591" y="278" width="58" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="620" y="290" text-anchor="middle" font-size="11" fill="#16a34a">version data</text>
+  <line x1="210" y1="318" x2="360" y2="357" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ag)"/>
+  <path d="M 420,318 L 420,340 L 140,340 L 140,357" stroke="#9333ea" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#ap)"/>
+  <line x1="750" y1="318" x2="580" y2="357" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ag)"/>
+  <path d="M 400,206 L 360,206 L 360,435 L 290,460" stroke="#ea580c" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#ao)"/>
+  <rect x="312" y="376" width="50" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="337" y="388" text-anchor="middle" font-size="11" fill="#ea580c">/metrics</text>
+  <line x1="380" y1="492" x2="580" y2="492" stroke="#9333ea" stroke-width="1.5" marker-end="url(#ap)"/>
+  <rect x="454" y="484" width="52" height="15" rx="3" fill="#ffffff" opacity="0.95"/>
+  <text x="480" y="496" text-anchor="middle" font-size="11" fill="#9333ea">scrape</text>
+  <rect x="20" y="555" width="340" height="108" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="36" y="574" font-size="12" font-weight="600" fill="#374151">Legend</text>
+  <line x1="36" y1="590" x2="70" y2="590" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="78" y="594" font-size="12" fill="#6b7280">Primary data / request flow</text>
+  <line x1="36" y1="610" x2="70" y2="610" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+  <text x="78" y="614" font-size="12" fill="#6b7280">Control / trigger flow</text>
+  <line x1="36" y1="630" x2="70" y2="630" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ag)"/>
+  <text x="78" y="634" font-size="12" fill="#6b7280">Data storage / versioning</text>
+  <line x1="36" y1="650" x2="70" y2="650" stroke="#9333ea" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ap)"/>
+  <text x="78" y="654" font-size="12" fill="#6b7280">Async / metadata flow</text>
+</svg>

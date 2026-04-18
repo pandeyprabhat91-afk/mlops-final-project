@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy ml package so DeepfakeDetector can be imported at serve time
+COPY . ./ml/
+RUN touch __init__.py ml/__init__.py
+
+RUN pip install --no-cache-dir \
+    "numpy<2" \
+    mlflow==3.10.1 \
+    torch==2.2.2 \
+    torchvision==0.17.2 \
+    efficientnet-pytorch==0.7.1 \
+    facenet-pytorch==2.5.3
+
+ENV MLFLOW_TRACKING_URI=http://mlflow-server:5000
+ENV MODEL_NAME=${MODEL_NAME:-deepfake}
+ENV MODEL_STAGE=${MODEL_STAGE:-Production}
+
+CMD mlflow models serve \
+    -m "models:/${MODEL_NAME}/${MODEL_STAGE}" \
+    --host 0.0.0.0 \
+    --port 5001 \
+    --no-conda
