@@ -1,0 +1,67 @@
+stages:
+  extract_frames:
+    cmd: python ml/preprocessing_pipeline.py extract_frames
+    deps:
+      - data/raw
+      - ml/preprocessing_pipeline.py
+    outs:
+      - data/frames
+
+  detect_faces:
+    cmd: python ml/preprocessing_pipeline.py detect_faces
+    deps:
+      - data/frames
+      - ml/preprocessing_pipeline.py
+    outs:
+      - data/faces
+
+  compute_features:
+    cmd: python ml/preprocessing_pipeline.py compute_features
+    deps:
+      - data/faces
+      - ml/preprocessing_pipeline.py
+    outs:
+      - data/features
+
+  validate_schema:
+    cmd: python ml/validate_schema.py --features_dir data/features
+    deps:
+      - data/features
+      - ml/validate_schema.py
+
+  train:
+    cmd: python ml/train.py --data_path data/features --params_file ml/params.yaml
+    deps:
+      - data/features
+      - ml/train.py
+      - ml/model.py
+      - ml/params.yaml
+      - ml/validate_schema.py
+    params:
+      - ml/params.yaml:
+    metrics:
+      - ml/metrics.json:
+          cache: false
+    outs:
+      - ml/best_model.pt:
+          cache: true
+
+  evaluate:
+    cmd: python ml/evaluate.py
+    deps:
+      - data/features
+      - ml/best_model.pt
+      - ml/evaluate.py
+    metrics:
+      - ml/eval_metrics.json:
+          cache: false
+
+  quantize:
+    cmd: python ml/quantize.py --run_id $(cat ml/metrics.json | python -c "import sys,json; print(json.load(sys.stdin)['run_id'])") --output ml/best_model_quantized.pt
+    deps:
+      - ml/best_model.pt
+      - ml/quantize.py
+      - ml/metrics.json
+    outs:
+      - ml/best_model_quantized.pt:
+          cache: true

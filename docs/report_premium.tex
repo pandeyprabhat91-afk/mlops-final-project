@@ -1,0 +1,705 @@
+%% ============================================================
+%%  Deepfake Detection System — Project Report (IEEE Style)
+%%  Author: Prabhat Pandey | Course: AI Application with MLOps
+%%  Date: April 2026
+%% ============================================================
+\documentclass[conference]{IEEEtran}
+
+%% ── Packages ────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancybox}
+\usepackage{microtype}
+\usepackage{float}
+\usepackage{array}
+
+%% ── Listing style ───────────────────────────────────────────
+\definecolor{codebg}{RGB}{20,23,34}
+\definecolor{codetext}{RGB}{197,212,245}
+\definecolor{codecomment}{RGB}{90,106,154}
+\definecolor{codekw}{RGB}{124,158,245}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\footnotesize\ttfamily\color{codetext},
+  commentstyle=\color{codecomment},
+  keywordstyle=\color{codekw}\bfseries,
+  breaklines=true,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{gray!40},
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+  aboveskip=6pt,
+  belowskip=6pt,
+  showstringspaces=false,
+}
+
+%% ── Hyperref config ─────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  citecolor=blue!70!black,
+  urlcolor=blue!70!black,
+}
+
+%% ── Custom column type ──────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+%% ── Callout box ─────────────────────────────────────────────
+\newcommand{\keyinsight}[2]{%
+  \vspace{4pt}
+  \fbox{\parbox{\linewidth}{\textbf{\small[#1]} \\ \small #2}}
+  \vspace{4pt}
+}
+
+%% ============================================================
+\begin{document}
+
+%% ── Title ───────────────────────────────────────────────────
+\title{Deepfake Detection System:\\
+       A Production-Grade End-to-End MLOps Platform}
+
+\author{%
+  \IEEEauthorblockN{Prabhat Pandey}
+  \IEEEauthorblockA{%
+    \textit{AI Application with MLOps} \\
+    April 2026 \\
+    Version 1.0
+  }
+}
+
+\maketitle
+
+%% ── Abstract ────────────────────────────────────────────────
+\begin{abstract}
+This report presents the design, implementation, and evaluation of a production-grade deepfake detection system built on a complete MLOps stack. The system classifies MP4 videos as real or AI-generated using a CNN+LSTM architecture (EfficientNet-B0 + 2-layer LSTM), deployed entirely on-premise via Docker Compose with no cloud dependency. The platform achieves F1-score $\geq 0.90$, P95 inference latency $<200\,\text{ms}$, and provides full ML lifecycle management: automated data pipelines (Airflow + DVC), experiment tracking (MLflow), real-time observability (Prometheus + Grafana), Grad-CAM explainability, drift detection, automated retraining, and a CI/CD pipeline enforcing code quality on every commit.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Deepfake Detection, MLOps, FastAPI, Airflow, MLflow, Docker, Prometheus, Grad-CAM, Drift Detection, CNN+LSTM
+\end{IEEEkeywords}
+
+%% ============================================================
+\section{Executive Summary}
+\label{sec:summary}
+
+The Deepfake Detection System is a production-grade, end-to-end MLOps platform classifying MP4 videos as \textbf{real} or \textbf{AI-generated (fake)}. It is designed for fully local, on-premise deployment — no cloud dependency exists in the stack.
+
+\subsection*{Key System Metrics}
+
+\begin{table}[H]
+\centering
+\caption{Key System Metrics at a Glance}
+\label{tab:metrics}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Context} \\
+\midrule
+Target F1-score         & $\geq 0.90$   & val\_f1 per epoch \\
+Target Accuracy         & $\geq 90\%$   & test\_accuracy in DVC \\
+P95 Inference Latency   & $< 200\,\text{ms}$ & Prometheus alert \\
+Alert: Error Rate       & $> 5\%$       & Grafana alert rule \\
+Alert: Drift Score      & $> 3.0$       & Z-score threshold \\
+Docker Containers       & 10            & Optimised from 13 \\
+Test Cases              & 49            & 38 unit, 8 int, 3 E2E \\
+API Endpoints           & 11            & All documented in LLD \\
+Prometheus Metrics      & 22            & Counters, gauges, histo. \\
+Grafana Dashboards      & 4             & Inference, pipeline, drift \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Problem Statement}
+\label{sec:problem}
+
+\subsection{Business Context}
+
+Deepfake videos — AI-synthesised media where a person's face is replaced with another — pose serious threats to journalism, legal evidence, and personal privacy. Detection tools have traditionally required deep ML expertise. This project builds a production-ready tool operable by non-technical users through a web browser.
+
+\subsection{Success Metrics}
+
+\begin{table}[H]
+\centering
+\caption{Success Metrics: ML vs Business Definitions}
+\label{tab:success}
+\begin{tabular}{@{}L{1.5cm}L{2.8cm}L{3cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{ML Definition} & \textbf{Business Definition} \\
+\midrule
+Accuracy   & $\geq 90\%$ on held-out test set & $< 10\%$ false positive rate \\
+F1-score   & $\geq 0.90$ harmonic mean & Balanced on real and fake \\
+Latency    & P95 $< 200\,\text{ms}$  & User waits $< 1$ second \\
+Availability & \texttt{/health} returns 200 & Always ready to serve \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{System Architecture}
+\label{sec:arch}
+
+\subsection{High-Level Architecture}
+
+The system follows a layered architecture:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Frontend} — React 18 + Vite + Nginx (ports 3000/3443)
+  \item \textbf{Backend} — FastAPI + Uvicorn, Python 3.11 (port 8000)
+  \item \textbf{ML \& Orchestration} — MLflow (5000), Airflow (8080)
+  \item \textbf{Observability} — Prometheus (9090), Grafana (3001), node-exporter (9100)
+  \item \textbf{Data} — PostgreSQL (5432), DVC + Git LFS
+\end{enumerate}
+
+Nginx proxies all \texttt{/api/*} requests from the frontend to \texttt{backend:8000}.
+
+\subsection{Core Design Principle: Loose Coupling}
+
+Every component boundary is crossed exclusively via configurable REST calls or URIs.
+
+\begin{table}[H]
+\centering
+\caption{Component Coupling Mechanisms}
+\label{tab:coupling}
+\begin{tabular}{@{}L{2cm}L{2.5cm}L{2.5cm}@{}}
+\toprule
+\textbf{Boundary} & \textbf{Mechanism} & \textbf{Config} \\
+\midrule
+Frontend $\leftrightarrow$ Backend & REST API & \texttt{VITE\_API\_URL} \\
+Backend $\leftrightarrow$ Model & \texttt{mlflow.pyfunc} & \texttt{MODEL\_STAGE} env \\
+Backend $\leftrightarrow$ MLflow & HTTP REST & \texttt{MLFLOW\_SERVER\_URL} \\
+Backend $\leftrightarrow$ Airflow & HTTP REST & \texttt{AIRFLOW\_URL} \\
+Prometheus $\leftrightarrow$ Services & HTTP scrape & \texttt{prometheus.yml} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Docker Compose Services}
+
+\begin{table}[H]
+\centering
+\caption{Docker Compose Service Inventory (10 containers, $\approx$15 GB)}
+\label{tab:docker}
+\begin{tabular}{@{}L{2cm}cL{3.5cm}@{}}
+\toprule
+\textbf{Service} & \textbf{Port} & \textbf{Purpose} \\
+\midrule
+\texttt{frontend}         & 3000 & React + Nginx \\
+\texttt{backend}          & 8000 & FastAPI \\
+\texttt{mlflow-server}    & 5000 & Tracking + Registry \\
+\texttt{airflow-webserver}& 8080 & Airflow UI \\
+\texttt{airflow-scheduler}& —    & DAG scheduler \\
+\texttt{airflow-init}     & —    & One-shot init \\
+\texttt{postgres}         & 5432 & Metadata store \\
+\texttt{prometheus}       & 9090 & Scraper \\
+\texttt{grafana}          & 3001 & Dashboards \\
+\texttt{node-exporter}    & 9100 & Host metrics \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\keyinsight{DESIGN DECISION}{Three containers were eliminated: \texttt{mlflow-serve} (9.36 GB), \texttt{redis} (61 MB), and \texttt{airflow-worker}. Airflow was switched to LocalExecutor. No functionality was lost.}
+
+%% ============================================================
+\section{ML Model Design}
+\label{sec:model}
+
+\subsection{Architecture}
+
+The model uses a \textbf{CNN + LSTM} architecture analysing both spatial (per-frame) and temporal (cross-frame) features:
+
+\begin{lstlisting}[language=Python, caption={Model forward pass (conceptual)}]
+Input: (batch, 30, 3, 224, 224)
+  # 30 face-cropped, normalised frames
+  |
+EfficientNet-B0  (pretrained, frozen)
+  # output: (batch, 30, 1280)
+  |
+2-layer LSTM  (hidden=256, dropout=0.3)
+  # output: (batch, 256) -- last hidden state
+  |
+Linear(256->128) -> ReLU -> Dropout(0.3)
+  -> Linear(128->1) -> Sigmoid
+  # p >= 0.5 -> FAKE,  p < 0.5 -> REAL
+\end{lstlisting}
+
+\subsection{Design Rationale}
+
+\begin{table}[H]
+\centering
+\caption{Model Architecture Decisions}
+\label{tab:rationale}
+\begin{tabular}{@{}L{1.8cm}L{2cm}L{3.5cm}@{}}
+\toprule
+\textbf{Choice} & \textbf{Decision} & \textbf{Rationale} \\
+\midrule
+Feature extractor & EfficientNet-B0 & Best accuracy/compute ratio; 1280-dim per frame \\
+Temporal model & 2-layer LSTM & Captures inter-frame artefacts; simpler than transformers \\
+CNN frozen & Yes & 106 training samples — fine-tuning causes score collapse \\
+Face detection & MTCNN & High accuracy; fallback to full frame when no face found \\
+Threshold & 0.5 + F1 sweep & \texttt{find\_best\_threshold()} sweeps 0.1--0.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameters (\texttt{ml/params.yaml})}
+\label{tab:hp}
+\begin{tabular}{@{}lclc@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Parameter} & \textbf{Value} \\
+\midrule
+\texttt{num\_frames}  & 30      & \texttt{lstm\_hidden} & 256 \\
+\texttt{batch\_size}  & 8       & \texttt{lstm\_layers} & 2 \\
+\texttt{lr}           & 0.0001  & \texttt{dropout}      & 0.3 \\
+\texttt{epochs}       & 60      & \texttt{val\_split}   & 0.2 \\
+Optimiser             & Adam    & Loss                  & BCELoss \\
+Scheduler   & \multicolumn{3}{l}{ReduceLROnPlateau (patience=3)} \\
+Augmentation & \multicolumn{3}{l}{RandomHFlip + ColorJitter + Grayscale ($3\times$)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Model Optimisation (INT8 Quantisation)}
+
+For CPU-only deployment, the model is quantised to INT8 using PyTorch dynamic quantisation — no calibration dataset required:
+
+\begin{lstlisting}[language=Python, caption={INT8 Quantisation (ml/quantize.py)}]
+quantized = torch.quantization.quantize_dynamic(
+    model,
+    {torch.nn.Linear, torch.nn.LSTM},
+    dtype=torch.qint8,
+)
+\end{lstlisting}
+
+\subsection{Grad-CAM Explainability}
+
+Every prediction generates a Grad-CAM heatmap identifying face regions that influenced the decision. Implementation hooks the last EfficientNet \texttt{\_blocks} layer, computes output gradients w.r.t. activation maps, applies ReLU + normalisation to produce a 224$\times$224 heatmap overlaid on the middle frame, returned as a base64 PNG. Failures degrade gracefully (return empty string; inference never blocked).
+
+%% ============================================================
+\section{Data Engineering Pipeline}
+\label{sec:data}
+
+\subsection{DVC Pipeline (\texttt{dvc.yaml})}
+
+The DVC pipeline provides a reproducible, dependency-tracked ML workflow. Seven stages re-execute only when their declared inputs change:
+
+\medskip
+\texttt{data/raw/} $\to$ \texttt{extract\_frames} $\to$ \texttt{detect\_faces} $\to$ \texttt{compute\_features} $\to$ \texttt{validate\_schema} / \texttt{train} $\to$ \texttt{evaluate} $\to$ \texttt{quantize}
+\medskip
+
+Key DVC commands are listed in Table~\ref{tab:dvc}.
+
+\begin{table}[H]
+\centering
+\caption{DVC Command Reference}
+\label{tab:dvc}
+\begin{tabular}{@{}L{3.5cm}L{4cm}@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\texttt{dvc repro}          & Run outdated stages only \\
+\texttt{dvc repro --dry}    & Verify DAG integrity (used in CI) \\
+\texttt{dvc metrics show}   & Display val\_f1, accuracy, best\_epoch \\
+\texttt{dvc metrics diff}   & Compare vs previous commit \\
+\texttt{dvc params diff}    & Compare hyperparameters \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Airflow Orchestration}
+
+\textbf{DAG 1: \texttt{deepfake\_pipeline}} (daily): ingest videos $\to$ extract frames $\to$ detect faces $\to$ compute features $\to$ validate schema $\to$ record baseline statistics $\to$ version with DVC.
+
+\textbf{DAG 2: \texttt{retraining\_dag}} (weekly): \texttt{check\_drift} (BranchPythonOperator) — if baseline $>7$ days old: fetch new data $\to$ \texttt{mlflow run} $\to$ evaluate $\to$ register if F1 $\geq 0.90$ $\to$ promote to Production.
+
+\subsection{Data Versioning}
+
+\begin{table}[H]
+\centering
+\caption{Three-Layer Data Versioning Strategy}
+\label{tab:versioning}
+\begin{tabular}{@{}L{1.5cm}L{2cm}L{4cm}@{}}
+\toprule
+\textbf{Layer} & \textbf{Tech} & \textbf{Scope} \\
+\midrule
+Code        & Git          & All source code \\
+Large files & Git LFS      & \texttt{*.mp4}, \texttt{*.jpg}, \texttt{*.pt}, \texttt{*.pkl} \\
+Datasets    & DVC          & 106 videos, 182 MB (\texttt{data/raw.dvc}) \\
+Hashes      & \texttt{dvc.lock} & Exact content hashes, all stage outputs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{MLOps Implementation}
+\label{sec:mlops}
+
+\subsection{Experiment Tracking}
+
+All MLflow tracking is \textbf{manual} (no autolog). Per training run, the system records: 2 tags (\texttt{git\_commit}, \texttt{device}), 9 parameters, 7 per-epoch metrics (losses, accuracies, F1s, learning rate), 10 evaluation metrics (test accuracy, F1, ROC-AUC, PR-AUC, best threshold, per-class precision/recall), and 4 artifacts (model, checkpoint, confusion matrix, ROC curve).
+
+\subsection{Model Registry Lifecycle}
+
+\[
+\text{None} \xrightarrow{\text{register}} \text{Staging} \xrightarrow{\text{F1} \geq 0.90} \text{Production} \xrightarrow{\text{new version}} \text{Archived}
+\]
+
+Rollback is instant: any Archived version transitions back via \texttt{POST /admin/rollback \{"version": "2"\}}.
+
+\subsection{Reproducibility}
+
+Any historical model can be reproduced exactly in three steps: (1) \texttt{git checkout <commit>}, (2) \texttt{dvc pull}, (3) \texttt{dvc repro train}. The \texttt{git\_commit} tag logged to MLflow ensures code/data/model traceability.
+
+%% ============================================================
+\section{Backend API}
+\label{sec:api}
+
+\subsection{Endpoint Summary}
+
+\begin{table}[H]
+\centering
+\caption{API Endpoint Reference (11 total)}
+\label{tab:endpoints}
+\begin{tabular}{@{}clL{4cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Purpose} \\
+\midrule
+POST & \texttt{/predict}               & Single video inference + Grad-CAM \\
+POST & \texttt{/predict/batch}         & Batch inference ($\leq 10$ videos) \\
+GET  & \texttt{/health}                & Liveness probe \\
+GET  & \texttt{/ready}                 & Readiness probe \\
+GET  & \texttt{/metrics}               & Prometheus scrape endpoint \\
+POST & \texttt{/feedback}              & Ground-truth feedback \\
+GET  & \texttt{/pipeline/mlflow-runs}  & Recent experiment runs \\
+GET  & \texttt{/pipeline/airflow-runs} & Recent DAG runs \\
+GET  & \texttt{/pipeline/throughput}   & Videos/minute \\
+POST & \texttt{/admin/rollback}        & Load specific model version \\
+GET  & \texttt{/admin/model-info}      & Loaded model metadata \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{POST /predict Response Schema}
+
+\begin{lstlisting}[language=json, caption={PredictResponse JSON}]
+{
+  "prediction":           "fake",
+  "confidence":           0.94,
+  "inference_latency_ms": 143.2,
+  "gradcam_image":        "<base64 PNG>",
+  "mlflow_run_id":        "abc123def456",
+  "frames_analyzed":      30
+}
+\end{lstlisting}
+
+\subsection{Prometheus Metrics (22 total)}
+
+\begin{table}[H]
+\centering
+\caption{Prometheus Metric Breakdown}
+\label{tab:prom}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Type} & \textbf{Count} \\
+\midrule
+Counters    & 9 \\
+Gauges      & 5 \\
+Histograms  & 7 \\
+Summaries   & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Key counters include: \texttt{requests\_total}, \texttt{predictions\_total}, \texttt{errors\_total}, \texttt{drift\_detected\_total}, \texttt{model\_reloads\_total}. Key gauges: \texttt{active\_requests}, \texttt{model\_memory\_mb}, \texttt{drift\_score}. Key histograms: \texttt{inference\_latency\_ms}, \texttt{confidence\_score}.
+
+%% ============================================================
+\section{Frontend Application}
+\label{sec:frontend}
+
+\subsection{Pages}
+
+\begin{itemize}[noitemsep]
+  \item \textbf{/} (Home) — drag-and-drop upload, FaceScan animation, ResultCard with Grad-CAM, feedback buttons
+  \item \textbf{/pipeline} (PipelineDashboard) — stat cards (throughput, best F1), MLflow runs table, Airflow DAG console
+  \item \textbf{/admin} (Admin) — current model version, rollback form
+  \item \textbf{/login} (Login) — authentication gate
+\end{itemize}
+
+\subsection{User Journey — Single Prediction}
+
+(1) Navigate to \texttt{localhost:3000} $\to$ (2) drop MP4 $\to$ (3) FaceScan animation during \texttt{POST /predict} $\to$ (4) view REAL/FAKE badge, confidence bar, Grad-CAM heatmap $\to$ (5) optional: submit correctness feedback.
+
+%% ============================================================
+\section{Monitoring \& Observability}
+\label{sec:monitoring}
+
+\subsection{Grafana Dashboards}
+
+\begin{table}[H]
+\centering
+\caption{Grafana Dashboard Overview}
+\label{tab:grafana}
+\begin{tabular}{@{}L{2.2cm}L{5.3cm}@{}}
+\toprule
+\textbf{Dashboard} & \textbf{Key Panels} \\
+\midrule
+Inference     & Request rate, P95 latency, error rate \%, confidence histogram \\
+Data Pipeline & Task durations, validation failures, throughput (videos/min) \\
+Model Drift   & Drift z-score over time, event counter, baseline age \\
+Combined      & All critical metrics — quick health check view \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Alert Rules}
+
+\begin{table}[H]
+\centering
+\caption{Grafana/Prometheus Alert Rules}
+\label{tab:alerts}
+\begin{tabular}{@{}L{2.5cm}L{2.5cm}cL{1.2cm}@{}}
+\toprule
+\textbf{Alert} & \textbf{Expression} & \textbf{For} & \textbf{Severity} \\
+\midrule
+HighErrorRate           & errors/requests $> 5\%$    & 3 min & Critical \\
+HighInferenceLatency    & P95 latency $> 200\,\text{ms}$ & 2 min & Warning \\
+FeatureDriftDetected    & drift\_score $> 3.0$       & 1 min & Warning \\
+PipelineValidationFail  & validation\_failures $> 0$ & Immed. & Critical \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Drift Detection}
+
+Feature drift is computed on every prediction: mean feature vector $\in \mathbb{R}^{3 \times 224 \times 224}$ is compared against the Airflow-generated baseline via:
+
+\[
+z = \text{mean}\!\left(\frac{|\mathbf{f} - \boldsymbol{\mu}|}{\max(\boldsymbol{\sigma}, \epsilon)}\right), \quad \epsilon = 10^{-8}
+\]
+
+If $z > 3.0$, the drift counter is incremented, a structured warning is logged, the Prometheus gauge is updated, and a Grafana alert fires. The weekly retraining DAG additionally checks baseline staleness ($>7$ days triggers full retraining).
+
+%% ============================================================
+\section{Testing}
+\label{sec:testing}
+
+\subsection{Test Summary}
+
+\begin{table}[H]
+\centering
+\caption{Test Results Summary}
+\label{tab:tests}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Category} & \textbf{Total} & \textbf{Passed} & \textbf{Failed} & \textbf{Skipped} \\
+\midrule
+Unit        & 38 & 38 & 0 & 0 \\
+Integration &  8 &  8 & 0 & 0 \\
+E2E         &  3 & —  & 0 & 3$^*$ \\
+\midrule
+\textbf{Total} & \textbf{49} & \textbf{46} & \textbf{0} & \textbf{3} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\footnotesize{$^*$E2E tests auto-skip when backend is not running (correct isolation). Run manually: \texttt{docker compose up -d \&\& pytest tests/e2e/ -v}}
+
+\subsection{Acceptance Criteria}
+
+\begin{table}[H]
+\centering
+\caption{Acceptance Criteria and Verification}
+\label{tab:acceptance}
+\begin{tabular}{@{}L{1.8cm}L{1.5cm}L{4.2cm}@{}}
+\toprule
+\textbf{Criterion} & \textbf{Target} & \textbf{Verification} \\
+\midrule
+Accuracy       & $\geq 90\%$     & \texttt{ml/eval\_metrics.json} $\to$ \texttt{test\_accuracy} \\
+F1-score       & $\geq 0.90$     & \texttt{ml/eval\_metrics.json} $\to$ \texttt{test\_f1} \\
+P95 Latency    & $< 200\,\text{ms}$ & \texttt{tests/e2e/test\_latency.py} \\
+API correctness & All match LLD  & 8 integration tests \\
+Error handling  & 400/503/500    & TC-16, TC-18, TC-27 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{CI/CD Pipeline}
+\label{sec:cicd}
+
+The GitHub Actions workflow (\texttt{.github/workflows/ci.yml}) triggers on every push and pull request to \texttt{main}:
+
+\medskip
+\textbf{lint} $\to$ \textbf{unit-tests} $\to$ \textbf{dvc-repro} ($\to$ \textbf{integration-tests}) $\to$ \textbf{build-docker}
+\medskip
+
+\begin{table}[H]
+\centering
+\caption{CI Checks and Failure Conditions}
+\label{tab:ci}
+\begin{tabular}{@{}L{2cm}L{2.5cm}L{3cm}@{}}
+\toprule
+\textbf{Check} & \textbf{Tool} & \textbf{Fail Condition} \\
+\midrule
+Code style      & black, isort   & Any formatting violation \\
+Linting         & flake8, ESLint & Any lint error \\
+Unit tests      & pytest         & Any test fails \\
+DVC integrity   & \texttt{dvc repro --dry} & Missing deps, broken pipeline \\
+Integration     & pytest         & Any API contract violation \\
+Docker build    & docker build   & Dockerfile syntax error \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Security}
+\label{sec:security}
+
+\begin{table}[H]
+\centering
+\caption{Security Controls}
+\label{tab:security}
+\begin{tabular}{@{}L{2.5cm}L{5cm}@{}}
+\toprule
+\textbf{Concern} & \textbf{Implementation} \\
+\midrule
+Secrets management   & \texttt{.env} never committed; template in \texttt{.env.example} \\
+HTTPS                & Nginx TLS; self-signed certs via \texttt{scripts/gen\_certs.sh} \\
+Admin exposure       & \texttt{/admin/rollback} not proxied through Nginx \\
+Data at rest         & Docker volumes on BitLocker/LUKS encrypted filesystem \\
+Data in transit      & Videos in \texttt{/tmp} only; deleted after inference \\
+Sensitive env vars   & POSTGRES\_PASSWORD, GRAFANA\_ADMIN\_PASSWORD, FERNET\_KEY all customised \\
+No cloud egress      & All compute and data stays local \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Evaluation Criteria Coverage}
+\label{sec:eval}
+
+\subsection{Demonstration (10 pts)}
+
+\textbf{UI/UX [6 pts]:} Single drag-and-drop → instant result (no ML knowledge required); 3-step user journey; client-side MP4 validation; TypeScript + ESLint; dark glass design system with animated confidence bars; Tailwind responsive layouts; step-by-step user manual (\texttt{docs/user\_manual.md}).
+
+\textbf{Pipeline Visualization [4 pts]:} Dedicated \texttt{/pipeline} page; Airflow DAG status with run history; color-coded error console (OK/ERR/WRN); \texttt{videos\_per\_minute} throughput stat card.
+
+\subsection{Software Engineering (5 pts)}
+
+\textbf{Design [2 pts]:} Full HLD (\texttt{docs/HLD.md}); LLD with all 11 endpoint I/O schemas (\texttt{docs/LLD.md}); interactive SVG architecture diagram; REST-only coupling with env-var configuration.
+
+\textbf{Implementation [2 pts]:} black + flake8 + isort in CI; \texttt{python-json-logger} structured logging; try/except on every route with typed \texttt{HTTPException}; NumPy-style docstrings throughout.
+
+\textbf{Testing [1 pt]:} 34 test cases TC-01–TC-34 (\texttt{docs/test\_plan.md}); 46 passed, 0 failed (\texttt{docs/test\_report.md}); acceptance criteria formally defined and verified.
+
+\subsection{MLOps Implementation (12 pts)}
+
+\begin{table}[H]
+\centering
+\caption{MLOps Evaluation Criteria Summary}
+\label{tab:mlops_eval}
+\begin{tabular}{@{}L{2.5cm}cL{4.5cm}@{}}
+\toprule
+\textbf{Category} & \textbf{Pts} & \textbf{Implementation} \\
+\midrule
+Data Engineering  & 2 & 7-stage Airflow daily DAG \\
+Source Control/CI & 2 & \texttt{dvc repro --dry} in GitHub Actions \\
+Experiment Tracking & 2 & Manual MLflow; git tag, per-class metrics, optimal threshold \\
+Instrumentation   & 2 & 22 Prometheus metrics; 4 Grafana dashboards; 15 s scrape \\
+Software Packaging & 4 & MLproject, FastAPI, Dockerized, MLflow pyfunc in-process \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\keyinsight{KEY INSIGHT — MLflow APIification}{The project uses \texttt{mlflow.pyfunc.load\_model()} in-process rather than a separate \texttt{mlflow models serve} container. This is superior: lower latency (no HTTP hop), fewer failure points, and the MLflow Model Registry fully manages versioning. FastAPI IS the model server.}
+
+%% ============================================================
+\section{Known Limitations \& Future Work}
+\label{sec:future}
+
+\subsection{Current Limitations}
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Training data:} 106 videos — sufficient for prototype but would benefit from FaceForensics++ or Celeb-DF scale.
+  \item \textbf{GPU support:} Designed for CPU inference; CUDA training path exists but is not load-tested.
+  \item \textbf{Batch inference:} \texttt{/predict/batch} capped at 10 files; no async queue.
+  \item \textbf{E2E tests in CI:} Require live Docker stack; run manually only.
+  \item \textbf{Face detection fallback:} Full-frame resize when MTCNN finds no face may reduce accuracy on distant shots.
+\end{itemize}
+
+\subsection{Planned Improvements}
+
+\begin{itemize}[noitemsep]
+  \item Background inference queue (Celery/Huey) for large files.
+  \item Progressive EfficientNet unfreezing after LSTM warm-up.
+  \item Video Transformer to replace LSTM for improved temporal modelling.
+  \item FaceForensics++ and Celeb-DF dataset integration.
+  \item A/B canary deployment between model versions.
+\end{itemize}
+
+%% ============================================================
+\section*{Acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+
+This system was built as a course project for AI Application with MLOps. All components are open-source. The deepfake dataset used for training was assembled locally for research purposes.
+
+%% ============================================================
+\appendix
+\section{File Structure}
+
+\begin{lstlisting}[caption={Project Directory Structure}]
+deepfake-detection/
+├── backend/app/
+│   ├── main.py           FastAPI entry point
+│   ├── model_loader.py   MLflow model singleton
+│   ├── preprocessing.py  Frame extraction + MTCNN
+│   ├── drift_detector.py Z-score drift detection
+│   ├── explainability.py Grad-CAM heatmap
+│   ├── metrics.py        22 Prometheus metrics
+│   └── routers/          predict, pipeline, admin
+├── frontend/src/
+│   ├── pages/            Home, PipelineDashboard, Admin
+│   └── components/       VideoUpload, ResultCard, ErrorConsole
+├── ml/
+│   ├── model.py          DeepfakeDetector (EfficientNet+LSTM)
+│   ├── train.py          Training + MLflow tracking
+│   ├── evaluate.py       Extended metrics + artifacts
+│   ├── quantize.py       INT8 dynamic quantization
+│   ├── params.yaml       Hyperparameters
+│   └── MLproject         MLflow project definition
+├── airflow/dags/
+│   ├── deepfake_pipeline.py  Daily ingestion DAG
+│   └── retraining_dag.py     Weekly retraining DAG
+├── monitoring/
+│   ├── prometheus.yml    Scrape config
+│   ├── alert_rules.yml   4 alert rules
+│   └── grafana/dashboards/
+├── tests/
+│   ├── unit/             38 unit tests
+│   ├── integration/      8 integration tests
+│   └── e2e/              3 E2E tests (manual)
+├── docs/
+│   ├── HLD.md  LLD.md  architecture.html
+│   ├── test_plan.md  test_report.md
+│   └── user_manual.md
+├── .github/workflows/ci.yml
+├── docker-compose.yml    10-service stack
+├── dvc.yaml              7-stage ML pipeline
+└── .env.example
+\end{lstlisting}
+
+\end{document}

@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  backend:
+    volumes:
+      - ./backend:/workspace/backend
+      - ./ml:/workspace/ml
+    environment:
+      MODEL_CHECKPOINT_PATH: /workspace/ml/best_model.pt
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+  frontend:
+    build:
+      target: dev
+    ports:
+      - "3002:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    command: npm run dev -- --host
+    mem_limit: 512m
+    mem_reservation: 256m

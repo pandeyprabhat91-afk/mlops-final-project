@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deepfake Detection System — Project Report</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3450;
+    --accent: #5b8dee;
+    --accent2: #7c6af7;
+    --green: #3ecf8e;
+    --red: #f06a6a;
+    --yellow: #f0c060;
+    --text: #e2e6f3;
+    --muted: #8891b4;
+    --code-bg: #141722;
+    --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* COVER PAGE */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 0%, #1a2a5e 0%, #0f1117 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .cover .badge {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    display: inline-block;
+  }
+  .cover h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #8aaaf5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  .cover h2 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--muted);
+    margin-bottom: 3rem;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    max-width: 600px;
+    width: 100%;
+  }
+  .cover-meta-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+  }
+  .cover-meta-item .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .cover-meta-item .value { font-size: 14px; color: var(--text); font-weight: 500; margin-top: 2px; }
+
+  /* LAYOUT */
+  .wrapper { display: flex; max-width: 1400px; margin: 0 auto; }
+
+  /* SIDEBAR TOC */
+  .toc-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2rem 1rem 2rem 1.5rem;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .toc-sidebar h3 {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .toc-sidebar a {
+    display: block;
+    padding: 4px 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .toc-sidebar a:hover { color: var(--text); background: var(--surface2); }
+  .toc-sidebar .toc-sub { padding-left: 1.2rem; font-size: 12px; }
+
+  /* MAIN CONTENT */
+  .content { flex: 1; padding: 3rem 3rem 6rem; max-width: 900px; }
+
+  /* SECTION HEADERS */
+  .section-number {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  h1 { font-size: 2rem; font-weight: 700; margin: 2.5rem 0 1rem; }
+  h2 { font-size: 1.4rem; font-weight: 600; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); color: var(--text); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 2rem 0 0.8rem; color: var(--accent); }
+  h4 { font-size: 0.95rem; font-weight: 600; margin: 1.5rem 0 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  p { margin-bottom: 1rem; }
+  ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead tr { background: var(--surface2); }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 9px 14px; vertical-align: top; }
+  tbody td:first-child { font-weight: 500; color: var(--text); white-space: nowrap; }
+  code { font-family: var(--font-mono); font-size: 12.5px; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: #a8d1f7; }
+
+  /* CODE BLOCKS */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #c5d4f5;
+    margin: 1rem 0;
+  }
+  pre .comment { color: #5a6a9a; }
+  pre .kw { color: #7c9ef5; }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    border-left: 3px solid;
+    font-size: 14px;
+  }
+  .callout-insight { background: #1a2240; border-color: var(--accent); }
+  .callout-decision { background: #1e1a40; border-color: var(--accent2); }
+  .callout-warning { background: #2a1f0a; border-color: var(--yellow); }
+  .callout-success { background: #0a2418; border-color: var(--green); }
+  .callout-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .callout-insight .callout-label { color: var(--accent); }
+  .callout-decision .callout-label { color: var(--accent2); }
+  .callout-warning .callout-label { color: var(--yellow); }
+  .callout-success .callout-label { color: var(--green); }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+  }
+  .metric-card .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .metric-card .metric-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .metric-card .metric-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* PIPELINE FLOW */
+  .flow-diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: #c5d4f5;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* SECTION DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+  /* TAGS */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    margin: 2px;
+  }
+  .tag-blue { background: #1a2a4a; color: var(--accent); border: 1px solid #2a4a8a; }
+  .tag-green { background: #0a2018; color: var(--green); border: 1px solid #1a5a3a; }
+  .tag-purple { background: #1e1a40; color: var(--accent2); border: 1px solid #3a2a80; }
+
+  blockquote {
+    border-left: 3px solid var(--border);
+    padding: 0.5rem 1rem;
+    color: var(--muted);
+    margin: 1rem 0;
+    font-style: italic;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .toc-sidebar { display: none; }
+    .content { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="badge">Course Project — AI Application with MLOps</div>
+  <h1>Deepfake Detection System</h1>
+  <h2>Production-Grade End-to-End MLOps Platform</h2>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><div class="label">Author</div><div class="value">Prabhat Pandey</div></div>
+    <div class="cover-meta-item"><div class="label">Date</div><div class="value">April 2026</div></div>
+    <div class="cover-meta-item"><div class="label">Version</div><div class="value">1.0</div></div>
+    <div class="cover-meta-item"><div class="label">Deployment</div><div class="value">On-Premise / Local</div></div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+<!-- SIDEBAR -->
+<nav class="toc-sidebar">
+  <h3>Contents</h3>
+  <a href="#s1">1. Executive Summary</a>
+  <a href="#s2">2. Problem Statement</a>
+  <a href="#s3">3. System Architecture</a>
+  <a class="toc-sub" href="#s3-1">3.1 High-Level Architecture</a>
+  <a class="toc-sub" href="#s3-2">3.2 Loose Coupling</a>
+  <a class="toc-sub" href="#s3-3">3.3 Docker Services</a>
+  <a href="#s4">4. ML Model Design</a>
+  <a class="toc-sub" href="#s4-1">4.1 Architecture</a>
+  <a class="toc-sub" href="#s4-2">4.2 Design Rationale</a>
+  <a class="toc-sub" href="#s4-3">4.3 Training Setup</a>
+  <a class="toc-sub" href="#s4-4">4.4 Optimisation</a>
+  <a class="toc-sub" href="#s4-5">4.5 Preprocessing</a>
+  <a class="toc-sub" href="#s4-6">4.6 Grad-CAM</a>
+  <a href="#s5">5. Data Engineering</a>
+  <a class="toc-sub" href="#s5-1">5.1 DVC Pipeline</a>
+  <a class="toc-sub" href="#s5-2">5.2 Airflow DAGs</a>
+  <a class="toc-sub" href="#s5-3">5.3 Data Versioning</a>
+  <a href="#s6">6. MLOps Implementation</a>
+  <a href="#s7">7. Backend API</a>
+  <a href="#s8">8. Frontend</a>
+  <a href="#s9">9. Monitoring</a>
+  <a href="#s10">10. Testing</a>
+  <a href="#s11">11. CI/CD Pipeline</a>
+  <a href="#s12">12. Security</a>
+  <a href="#s13">13. Evaluation Criteria</a>
+  <a href="#s14">14. Limitations & Future Work</a>
+  <a href="#appendix-a">Appendix A</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+<!-- ─────────────────── 1. EXECUTIVE SUMMARY ─────────────────── -->
+<section id="s1">
+<h2>1. Executive Summary</h2>
+<p>The <strong>Deepfake Detection System</strong> is a production-grade, end-to-end MLOps platform that classifies MP4 videos as <strong>real</strong> or <strong>AI-generated (fake)</strong> using a deep learning model. The system is designed for fully local, on-premise deployment using Docker Compose — no cloud dependency exists anywhere in the stack.</p>
+<p>The platform covers the full ML product lifecycle: automated data ingestion and preprocessing, model training with full experiment tracking, model registry with staged promotion, real-time inference via a REST API, a React frontend with explainability (Grad-CAM), comprehensive Prometheus/Grafana monitoring with drift detection, automated weekly retraining, and a CI/CD pipeline enforcing code quality and reproducibility on every commit.</p>
+
+<h3>Key Metrics at a Glance</h3>
+<div class="metrics-grid">
+  <div class="metric-card"><div class="metric-label">Target F1-score</div><div class="metric-value">≥ 0.90</div><div class="metric-desc">val_f1 tracked per epoch</div></div>
+  <div class="metric-card"><div class="metric-label">Target Accuracy</div><div class="metric-value">≥ 90%</div><div class="metric-desc">test_accuracy in DVC</div></div>
+  <div class="metric-card"><div class="metric-label">P95 Inference</div><div class="metric-value">&lt; 200ms</div><div class="metric-desc">Prometheus alert threshold</div></div>
+  <div class="metric-card"><div class="metric-label">Docker Containers</div><div class="metric-value">10</div><div class="metric-desc">Optimised from 13</div></div>
+  <div class="metric-card"><div class="metric-label">Test Cases</div><div class="metric-value">49</div><div class="metric-desc">38 unit, 8 int, 3 E2E</div></div>
+  <div class="metric-card"><div class="metric-label">API Endpoints</div><div class="metric-value">11</div><div class="metric-desc">All documented in LLD</div></div>
+  <div class="metric-card"><div class="metric-label">Prometheus Metrics</div><div class="metric-value">22</div><div class="metric-desc">Counters, gauges, histograms</div></div>
+  <div class="metric-card"><div class="metric-label">Grafana Dashboards</div><div class="metric-value">4</div><div class="metric-desc">Inference, pipeline, drift, combined</div></div>
+</div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 2. PROBLEM STATEMENT ─────────────────── -->
+<section id="s2">
+<h2>2. Problem Statement</h2>
+<h3>2.1 Business Context</h3>
+<p>Deepfake videos — AI-synthesised media where a person's face is replaced with another — pose serious threats to trust, journalism, legal evidence, and personal privacy. Detection tools have traditionally required deep ML expertise to operate. This project builds a production-ready tool that any non-technical user can operate through a web browser.</p>
+
+<h3>2.2 Success Metrics</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Metric</th><th>ML Definition</th><th>Business Definition</th></tr></thead>
+  <tbody>
+    <tr><td>Accuracy</td><td>≥ 90% on held-out test set</td><td>&lt; 10% false positive rate for journalists</td></tr>
+    <tr><td>F1-score</td><td>≥ 0.90 (harmonic mean of precision/recall)</td><td>Balanced performance on real and fake classes</td></tr>
+    <tr><td>Latency</td><td>P95 inference &lt; 200 ms</td><td>User waits &lt; 1 second for a result</td></tr>
+    <tr><td>Availability</td><td><code>/health</code> returns 200</td><td>System is always ready to serve</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 3. SYSTEM ARCHITECTURE ─────────────────── -->
+<section id="s3">
+<h2>3. System Architecture</h2>
+
+<h3 id="s3-1">3.1 High-Level Architecture</h3>
+<div class="flow-diagram">USER (Browser)
+      │  HTTP/HTTPS
+      ▼
+┌─────────────────────────────────────────────────────────┐
+│  FRONTEND — React 18 + Vite + Nginx                     │
+│  Port 3000 (HTTP) / 3443 (HTTPS)                        │
+│  • Home: drag-and-drop upload + Grad-CAM result         │
+│  • Pipeline Dashboard: MLflow runs, Airflow status      │
+│  • Admin: model rollback, version info                  │
+│  Nginx proxies /api/* → backend:8000                    │
+└─────────────────────┬───────────────────────────────────┘
+                      │  REST /api/*
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│  BACKEND — FastAPI + Uvicorn (Python 3.11) | Port 8000  │
+│  POST /predict         POST /predict/batch              │
+│  GET  /health, /ready  GET  /metrics                    │
+│  POST /feedback        GET  /pipeline/*                 │
+│  POST /admin/rollback  GET  /admin/model-info           │
+└──────┬─────────────────┬─────────────────┬──────────────┘
+       │                 │                 │
+       ▼                 ▼                 ▼
+┌────────────┐  ┌──────────────┐  ┌──────────────────┐
+│  MLflow    │  │   Airflow    │  │   Prometheus     │
+│  Port 5000 │  │  Port 8080   │  │   Port 9090      │
+│  Tracking  │  │  2 DAGs      │  │   15s scrape     │
+│  Registry  │  │              │  │                  │
+└─────┬──────┘  └──────┬───────┘  └────────┬─────────┘
+      │                │                   │
+      ▼                ▼                   ▼
+┌──────────┐  ┌──────────────┐  ┌──────────────────┐
+│ Postgres │  │ DVC + GitLFS │  │    Grafana       │
+│ Port5432 │  │ data/raw     │  │    Port 3001     │
+│ Airflow  │  │ data/frames  │  │    4 dashboards  │
+│ metadata │  │ data/features│  │    alert rules   │
+└──────────┘  └──────────────┘  └──────────────────┘</div>
+
+<h3 id="s3-2">3.2 Core Design Principle: Loose Coupling</h3>
+<p>Every boundary between components is crossed exclusively via configurable REST calls or URIs. No frontend code ever imports backend code. No backend code imports Airflow or MLflow internals.</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>Boundary</th><th>Mechanism</th><th>Configuration</th></tr></thead>
+  <tbody>
+    <tr><td>Frontend ↔ Backend</td><td>REST API</td><td><code>VITE_API_URL</code> env var</td></tr>
+    <tr><td>Backend ↔ Model</td><td><code>mlflow.pyfunc.load_model(uri)</code></td><td><code>MODEL_NAME</code> + <code>MODEL_STAGE</code> env vars</td></tr>
+    <tr><td>Backend ↔ MLflow</td><td>HTTP REST (<code>/api/2.0/mlflow/...</code>)</td><td><code>MLFLOW_SERVER_URL</code> env var</td></tr>
+    <tr><td>Backend ↔ Airflow</td><td>HTTP REST (<code>/api/v1/dags/...</code>)</td><td><code>AIRFLOW_URL</code> env var</td></tr>
+    <tr><td>Prometheus ↔ Services</td><td>HTTP scrape</td><td><code>prometheus.yml</code> static config</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="s3-3">3.3 Docker Compose Services</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Service</th><th>Port</th><th>Image / Build</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>frontend</code></td><td>3000</td><td><code>./frontend/Dockerfile</code></td><td>React + Nginx</td></tr>
+    <tr><td><code>backend</code></td><td>8000</td><td><code>./backend/Dockerfile</code></td><td>FastAPI</td></tr>
+    <tr><td><code>mlflow-server</code></td><td>5000</td><td><code>ghcr.io/mlflow/mlflow</code></td><td>Tracking + Registry</td></tr>
+    <tr><td><code>airflow-webserver</code></td><td>8080</td><td><code>apache/airflow:2.8.1</code></td><td>Airflow UI</td></tr>
+    <tr><td><code>airflow-scheduler</code></td><td>—</td><td><code>apache/airflow:2.8.1</code></td><td>DAG scheduler</td></tr>
+    <tr><td><code>airflow-init</code></td><td>—</td><td><code>apache/airflow:2.8.1</code></td><td>One-shot init</td></tr>
+    <tr><td><code>postgres</code></td><td>5432</td><td><code>postgres:15</code></td><td>Metadata store</td></tr>
+    <tr><td><code>prometheus</code></td><td>9090</td><td><code>prom/prometheus:v2.50.1</code></td><td>Scraper</td></tr>
+    <tr><td><code>grafana</code></td><td>3001</td><td><code>grafana/grafana:10.3.1</code></td><td>Dashboards</td></tr>
+    <tr><td><code>node-exporter</code></td><td>9100</td><td><code>prom/node-exporter:1.7</code></td><td>Host metrics</td></tr>
+  </tbody>
+</table></div>
+<div class="callout callout-decision">
+  <div class="callout-label">Design Decision — Container Optimisation</div>
+  Three containers were eliminated: <code>mlflow-serve</code> (9.36 GB, never called), <code>redis</code> (61 MB, Celery broker only), and <code>airflow-worker</code> (switched to LocalExecutor). No functionality was lost; total image footprint was significantly reduced.
+</div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 4. ML MODEL DESIGN ─────────────────── -->
+<section id="s4">
+<h2>4. ML Model Design</h2>
+
+<h3 id="s4-1">4.1 Architecture</h3>
+<p>The model uses a <strong>CNN + LSTM</strong> architecture to detect deepfakes by analysing both spatial (per-frame) and temporal (cross-frame) features:</p>
+<div class="flow-diagram">Input: (batch, 30, 3, 224, 224)
+  — 30 face-cropped, normalised frames
+  │
+  ▼
+EfficientNet-B0  (pretrained ImageNet, frozen)
+  — spatial feature extraction per frame
+  — output: (batch, 30, 1280)
+  │
+  ▼
+2-layer LSTM  (hidden=256, dropout=0.3)
+  — temporal dependencies across 30 frames
+  — captures manipulation artefacts over time
+  — output: (batch, 256)  ← last hidden state
+  │
+  ▼
+Linear(256→128) → ReLU → Dropout(0.3) → Linear(128→1) → Sigmoid
+  │
+  ▼
+Output: (batch, 1)
+  probability ≥ 0.5 → FAKE
+  probability &lt;  0.5 → REAL</div>
+
+<h3 id="s4-2">4.2 Design Rationale</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Choice</th><th>Decision</th><th>Rationale</th></tr></thead>
+  <tbody>
+    <tr><td>Feature extractor</td><td>EfficientNet-B0</td><td>Best accuracy/compute ratio; 1280-dim features per frame; pretrained ImageNet weights</td></tr>
+    <tr><td>Temporal model</td><td>2-layer LSTM</td><td>Captures inter-frame temporal artefacts; simpler than transformers for 30-frame sequences</td></tr>
+    <tr><td>CNN frozen</td><td>Yes</td><td>106 training samples — CNN fine-tuning causes score collapse; frozen + LSTM is stable</td></tr>
+    <tr><td>Face detection</td><td>MTCNN</td><td>High accuracy across poses; fallback to resized full frame when no face detected</td></tr>
+    <tr><td>Threshold</td><td>0.5 + best F1 sweep</td><td><code>find_best_threshold()</code> sweeps 0.1–0.9 to find optimal F1 threshold per evaluation run</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="s4-3">4.3 Training Configuration</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Hyperparameter</th><th>Value</th><th>Hyperparameter</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td><code>num_frames</code></td><td>30</td><td><code>lstm_hidden</code></td><td>256</td></tr>
+    <tr><td><code>batch_size</code></td><td>8</td><td><code>lstm_layers</code></td><td>2</td></tr>
+    <tr><td><code>lr</code></td><td>0.0001</td><td><code>dropout</code></td><td>0.3</td></tr>
+    <tr><td><code>epochs</code></td><td>60</td><td><code>val_split</code></td><td>0.2</td></tr>
+    <tr><td>Optimiser</td><td>Adam</td><td>Loss</td><td>BCELoss</td></tr>
+    <tr><td>Scheduler</td><td>ReduceLROnPlateau (patience=3)</td><td>Augmentation</td><td>HFlip + ColorJitter + Grayscale (3×)</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="s4-4">4.4 Model Optimisation — INT8 Quantisation</h3>
+<p>For CPU-only deployment, the model is quantised to INT8 using PyTorch dynamic quantisation. This reduces LSTM and Linear layer storage without requiring a calibration dataset:</p>
+<pre><span class="comment"># ml/quantize.py</span>
+quantized = torch.quantization.quantize_dynamic(
+    model,
+    {torch.nn.Linear, torch.nn.LSTM},
+    dtype=torch.qint8,
+)</pre>
+
+<h3 id="s4-5">4.5 Preprocessing Pipeline</h3>
+<div class="flow-diagram">MP4 file
+  │
+  ├─ extract_frames(): OpenCV samples 30 frames evenly via np.linspace
+  │    raises ValueError if video unreadable or has 0 frames
+  │
+  ├─ detect_faces(): MTCNN face detection on each frame
+  │    fallback: resize full frame to 224×224 if no face found
+  │
+  └─ normalize(): ImageNet mean/std → torch.Tensor (30, 3, 224, 224)
+       mean = [0.485, 0.456, 0.406]
+       std  = [0.229, 0.224, 0.225]</div>
+
+<h3 id="s4-6">4.6 Explainability — Grad-CAM</h3>
+<p>Every prediction generates a Grad-CAM heatmap showing which regions of the face influenced the model's decision:</p>
+<ul>
+  <li>Hooks the last EfficientNet <code>_blocks</code> layer</li>
+  <li>Computes gradients of output w.r.t. activation maps</li>
+  <li>Applies ReLU + normalisation → 224×224 heatmap</li>
+  <li>Overlays on middle frame → returns base64 PNG</li>
+  <li>Returns <code>""</code> on any failure (best-effort, never blocks inference)</li>
+</ul>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 5. DATA ENGINEERING ─────────────────── -->
+<section id="s5">
+<h2>5. Data Engineering Pipeline</h2>
+
+<h3 id="s5-1">5.1 DVC Pipeline</h3>
+<p>The DVC pipeline defines a reproducible, dependency-tracked ML workflow. Stages only re-execute when their declared inputs change.</p>
+<div class="flow-diagram">data/raw/ (MP4s — DVC-tracked)
+    │
+    ▼
+[extract_frames]  →  data/frames/
+    │
+    ▼
+[detect_faces]    →  data/faces/
+    │
+    ▼
+[compute_features] →  data/features/ (.pt tensors)
+    │
+    ├──────────────────────────────────┐
+    ▼                                  ▼
+[validate_schema]              [train]  →  ml/best_model.pt
+                                   │
+                                   ▼
+                               [evaluate] →  eval_metrics.json
+                                   │
+                                   ▼
+                               [quantize] →  best_model_quantized.pt</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>DVC Command</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>dvc repro</code></td><td>Run outdated stages only</td></tr>
+    <tr><td><code>dvc repro --dry</code></td><td>Verify DAG integrity (used in CI)</td></tr>
+    <tr><td><code>dvc metrics show</code></td><td>Display val_f1, val_accuracy, val_loss, best_epoch</td></tr>
+    <tr><td><code>dvc metrics diff HEAD~1</code></td><td>Compare metrics vs previous commit</td></tr>
+    <tr><td><code>dvc params diff</code></td><td>Compare hyperparameters vs previous commit</td></tr>
+    <tr><td><code>dvc dag</code></td><td>Visualise pipeline in terminal</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="s5-2">5.2 Airflow Orchestration</h3>
+<h4>DAG 1: deepfake_pipeline (Schedule: @daily)</h4>
+<div class="flow-diagram">ingest_videos → extract_frames → detect_faces → compute_features
+    → validate_schema → record_baseline_stats → version_with_dvc</div>
+
+<h4>DAG 2: retraining_dag (Schedule: @weekly)</h4>
+<div class="flow-diagram">check_drift (BranchPythonOperator)
+    ├─ [baseline stale] → fetch_new_data → run_mlproject → evaluate_model
+    │                         → register_if_better (F1 ≥ 0.90) → promote_to_production
+    └─ [baseline fresh] → skip_retraining</div>
+
+<h3 id="s5-3">5.3 Data Versioning</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Layer</th><th>Technology</th><th>Scope</th></tr></thead>
+  <tbody>
+    <tr><td>Code</td><td>Git</td><td>All source code</td></tr>
+    <tr><td>Large binaries</td><td>Git LFS</td><td><code>*.mp4</code>, <code>*.jpg</code> frames, <code>*.pt</code>, <code>*.pkl</code></td></tr>
+    <tr><td>Dataset tracking</td><td>DVC (<code>data/raw.dvc</code>)</td><td>106 videos, 182 MB raw dataset</td></tr>
+    <tr><td>Pipeline outputs</td><td>DVC (<code>dvc.lock</code>)</td><td>Exact content hashes of all stage outputs</td></tr>
+    <tr><td>Local cache</td><td><code>dvc-storage/</code></td><td>Content-addressed cache (sibling of repo)</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 6. MLOPS IMPLEMENTATION ─────────────────── -->
+<section id="s6">
+<h2>6. MLOps Implementation</h2>
+
+<h3>6.1 Experiment Tracking</h3>
+<p>All MLflow tracking is <strong>manual</strong> (no autolog) for full control. Per training run:</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>Category</th><th>Items Tracked</th></tr></thead>
+  <tbody>
+    <tr><td>Tags</td><td><code>git_commit</code>, <code>device</code></td></tr>
+    <tr><td>Parameters</td><td>num_frames, batch_size, lr, epochs, lstm_hidden, lstm_layers, dropout, val_split, backbone</td></tr>
+    <tr><td>Per-epoch Metrics</td><td>train_loss, val_loss, train_accuracy, val_accuracy, train_f1, val_f1, learning_rate</td></tr>
+    <tr><td>Evaluation Metrics</td><td>test_accuracy, test_f1, roc_auc, pr_auc, best_threshold, best_f1, precision/recall per class</td></tr>
+    <tr><td>Artifacts</td><td><code>model/</code> (pyfunc), <code>checkpoints/</code> (.pt), confusion_matrix.png, roc_curve.png</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.2 Model Registry Lifecycle</h3>
+<div class="flow-diagram">  Training run completes
+         │
+         ▼
+    None (unregistered)
+         │  mlflow.register_model()
+         ▼
+    Staging
+         │  evaluate → F1 ≥ 0.90
+         ▼
+    Production  ◄── backend loads from here at startup
+         │  new version promoted
+         ▼
+    Archived    ◄── available for instant rollback</div>
+<p>Rollback is instant via <code>POST /admin/rollback {"version": "2"}</code>, the MLflow UI, or the retraining DAG's automatic path.</p>
+
+<h3>6.3 Reproducibility</h3>
+<pre><span class="comment"># 1. Restore exact code state</span>
+git checkout &lt;git_commit_tag_from_mlflow&gt;
+
+<span class="comment"># 2. Restore exact data state</span>
+dvc pull    <span class="comment"># uses dvc.lock content hashes</span>
+
+<span class="comment"># 3. Re-run training</span>
+dvc repro train
+<span class="comment"># Output model is byte-for-byte identical</span></pre>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 7. BACKEND API ─────────────────── -->
+<section id="s7">
+<h2>7. Backend API</h2>
+
+<h3>7.1 Endpoint Summary</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tag tag-blue">POST</span></td><td><code>/predict</code></td><td>Single video inference + Grad-CAM + drift check</td></tr>
+    <tr><td><span class="tag tag-blue">POST</span></td><td><code>/predict/batch</code></td><td>Batch inference (up to 10 videos)</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/health</code></td><td>Liveness probe</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/ready</code></td><td>Readiness probe (model loaded?)</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/metrics</code></td><td>Prometheus scrape endpoint</td></tr>
+    <tr><td><span class="tag tag-blue">POST</span></td><td><code>/feedback</code></td><td>Ground-truth feedback submission</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/pipeline/mlflow-runs</code></td><td>Recent MLflow experiment runs</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/pipeline/airflow-runs</code></td><td>Recent Airflow DAG runs</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/pipeline/throughput</code></td><td>Videos/minute from last run</td></tr>
+    <tr><td><span class="tag tag-blue">POST</span></td><td><code>/admin/rollback</code></td><td>Load specific model version</td></tr>
+    <tr><td><span class="tag tag-green">GET</span></td><td><code>/admin/model-info</code></td><td>Currently loaded model metadata</td></tr>
+  </tbody>
+</table></div>
+
+<h3>7.2 POST /predict — Data Flow</h3>
+<div class="flow-diagram">1. Validate: file.filename.endswith(".mp4") → 400 on failure
+2. Save to tempfile.NamedTemporaryFile(suffix=".mp4")
+3. preprocess_video(tmp_path):
+     extract_frames() → detect_faces() → normalize() → Tensor(30,3,224,224)
+4. model.predict(tensor.unsqueeze(0).numpy()) → confidence float
+5. prediction = "fake" if confidence ≥ 0.5 else "real"
+6. compute_drift_score(frame_mean_feature, baseline) → z-score
+   → if z-score &gt; 3.0: DRIFT_DETECTED.inc(); logger.warning(...)
+7. generate_gradcam(pytorch_model, frames_tensor) → base64 PNG
+8. Update all 22 Prometheus metrics
+9. Return PredictResponse JSON</div>
+
+<h3>7.3 Response Schema</h3>
+<pre>{
+  "prediction":          "fake",
+  "confidence":          0.94,
+  "inference_latency_ms": 143.2,
+  "gradcam_image":       "&lt;base64 PNG&gt;",
+  "mlflow_run_id":       "abc123def456",
+  "frames_analyzed":     30
+}</pre>
+
+<h3>7.4 Prometheus Metrics (22 Total)</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Type</th><th>Count</th><th>Key Metrics</th></tr></thead>
+  <tbody>
+    <tr><td>Counters</td><td>9</td><td>requests_total, predictions_total, errors_total, drift_detected_total, model_reloads_total, …</td></tr>
+    <tr><td>Gauges</td><td>5</td><td>active_requests, model_memory_mb, drift_score, bulk_queue_depth, last_confidence_score</td></tr>
+    <tr><td>Histograms</td><td>7</td><td>request_latency_seconds, inference_latency_ms, preprocessing_latency_ms, confidence_score, …</td></tr>
+    <tr><td>Summaries</td><td>3</td><td>inference_processing_seconds, request_processing_seconds, preprocessing_processing_seconds</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 8. FRONTEND ─────────────────── -->
+<section id="s8">
+<h2>8. Frontend Application</h2>
+
+<h3>8.1 Pages and Components</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Route</th><th>Component</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>/login</code></td><td><code>Login.tsx</code></td><td>Authentication gate</td></tr>
+    <tr><td><code>/</code></td><td><code>Home.tsx</code></td><td>Main inference UI — drag-and-drop upload + Grad-CAM result</td></tr>
+    <tr><td><code>/pipeline</code></td><td><code>PipelineDashboard.tsx</code></td><td>MLOps monitoring: stat cards, MLflow runs table, Airflow console</td></tr>
+    <tr><td><code>/admin</code></td><td><code>Admin.tsx</code></td><td>Model version management and rollback</td></tr>
+  </tbody>
+</table></div>
+
+<h3>8.2 User Journey — Single Prediction</h3>
+<ol>
+  <li>User navigates to <code>http://localhost:3000</code></li>
+  <li>Drags and drops MP4 file (or clicks "browse")</li>
+  <li>FaceScan animation plays while <code>POST /predict</code> is in-flight</li>
+  <li>ResultCard displays: REAL/FAKE badge, confidence bar, Grad-CAM heatmap, frames count</li>
+  <li><em>(Optional)</em> User clicks "Incorrect" → <code>POST /feedback</code> logs ground truth</li>
+</ol>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 9. MONITORING ─────────────────── -->
+<section id="s9">
+<h2>9. Monitoring & Observability</h2>
+
+<h3>9.1 Grafana Dashboards</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Dashboard</th><th>Key Panels</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Inference</strong></td><td>Request rate, P95 latency, error rate %, confidence histogram, active requests gauge</td></tr>
+    <tr><td><strong>Data Pipeline</strong></td><td>Task durations, validation failure counter, throughput (videos/min), frames extracted</td></tr>
+    <tr><td><strong>Model Drift</strong></td><td>Drift z-score over time, drift event counter, baseline age</td></tr>
+    <tr><td><strong>Combined</strong></td><td>All critical metrics on one screen for quick health check</td></tr>
+  </tbody>
+</table></div>
+
+<h3>9.2 Alert Rules</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Alert</th><th>Expression</th><th>Duration</th><th>Severity</th></tr></thead>
+  <tbody>
+    <tr><td>HighErrorRate</td><td><code>rate(errors[5m]) / rate(requests[5m]) &gt; 0.05</code></td><td>3 min</td><td><span class="tag" style="background:#3a0a0a;color:#f06a6a;border:1px solid #8a1a1a">Critical</span></td></tr>
+    <tr><td>HighInferenceLatency</td><td>P95 inference latency &gt; 200 ms</td><td>2 min</td><td><span class="tag" style="background:#2a2000;color:#f0c060;border:1px solid #6a5000">Warning</span></td></tr>
+    <tr><td>FeatureDriftDetected</td><td><code>deepfake_drift_score &gt; 3.0</code></td><td>1 min</td><td><span class="tag" style="background:#2a2000;color:#f0c060;border:1px solid #6a5000">Warning</span></td></tr>
+    <tr><td>PipelineValidationFailure</td><td><code>increase(pipeline_validation_failures_total[1h]) &gt; 0</code></td><td>Immediate</td><td><span class="tag" style="background:#3a0a0a;color:#f06a6a;border:1px solid #8a1a1a">Critical</span></td></tr>
+  </tbody>
+</table></div>
+
+<h3>9.3 Drift Detection</h3>
+<div class="flow-diagram">1. Compute mean feature vector across 30 frames: shape (3, 224, 224)
+2. Load baseline from ml/feature_baseline.json (generated by Airflow)
+3. z-score = mean(|features - baseline_mean| / max(baseline_std, 1e-8))
+4. If z-score &gt; 3.0 → increment DRIFT_DETECTED counter
+                    → emit structured warning log
+                    → update DRIFT_SCORE Prometheus gauge
+                    → fire Grafana alert
+5. Weekly: retraining_dag checks baseline age
+   If staleness &gt; 7 days → trigger full retraining pipeline</div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 10. TESTING ─────────────────── -->
+<section id="s10">
+<h2>10. Testing</h2>
+
+<h3>10.1 Test Summary</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Category</th><th>Total</th><th>Passed</th><th>Failed</th><th>Skipped</th></tr></thead>
+  <tbody>
+    <tr><td>Unit</td><td>38</td><td>38</td><td>0</td><td>0</td></tr>
+    <tr><td>Integration</td><td>8</td><td>8</td><td>0</td><td>0</td></tr>
+    <tr><td>E2E</td><td>3</td><td>—</td><td>0</td><td>3*</td></tr>
+    <tr style="font-weight:600"><td>Total</td><td>49</td><td>46</td><td>0</td><td>3</td></tr>
+  </tbody>
+</table></div>
+<blockquote>*E2E tests auto-skip when backend is not running. Run manually: <code>docker compose up -d && pytest tests/e2e/ -v</code></blockquote>
+
+<h3>10.2 Acceptance Criteria</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Criterion</th><th>Target</th><th>Verification Method</th></tr></thead>
+  <tbody>
+    <tr><td>Accuracy</td><td>≥ 90%</td><td><code>ml/eval_metrics.json</code> → <code>test_accuracy</code></td></tr>
+    <tr><td>F1-score</td><td>≥ 0.90</td><td><code>ml/eval_metrics.json</code> → <code>test_f1</code></td></tr>
+    <tr><td>P95 Latency</td><td>&lt; 200 ms</td><td><code>tests/e2e/test_latency.py</code> (live backend)</td></tr>
+    <tr><td>API correctness</td><td>All endpoints match LLD spec</td><td>8 integration tests</td></tr>
+    <tr><td>Error handling</td><td>400/503/500 on all failure modes</td><td>TC-16, TC-18, TC-27</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 11. CI/CD ─────────────────── -->
+<section id="s11">
+<h2>11. CI/CD Pipeline</h2>
+
+<h3>11.1 GitHub Actions Workflow</h3>
+<div class="flow-diagram">Triggers: push to main | pull_request to main
+
+┌─────────┐   ┌──────────────┐   ┌─────────────┐   ┌────────────┐
+│  lint   │──▶│  unit-tests  │──▶│  dvc-repro  │──▶│  build-    │
+│ black   │   │ pytest unit/ │   │  --dry      │   │  docker    │
+│ flake8  │   │ coverage.xml │   │ DAG integr. │   │ backend:ci │
+│ isort   │   │ as artifact  │   │ ity check   │   │ frontend:ci│
+│ ESLint  │   └──────────────┘   └──────┬──────┘   └────────────┘
+└─────────┘                             │
+                                        ▼
+                               ┌──────────────────┐
+                               │ integration-tests│
+                               │ pytest integr./  │
+                               └──────────────────┘</div>
+
+<h3>11.2 CI Guarantees</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Check</th><th>Tool</th><th>Fail Condition</th></tr></thead>
+  <tbody>
+    <tr><td>Code style</td><td>black, isort</td><td>Any formatting violation</td></tr>
+    <tr><td>Linting</td><td>flake8, ESLint</td><td>Any lint error</td></tr>
+    <tr><td>Unit tests</td><td>pytest</td><td>Any test fails</td></tr>
+    <tr><td>DVC DAG integrity</td><td><code>dvc repro --dry</code></td><td>Missing deps, circular deps, broken pipeline</td></tr>
+    <tr><td>Integration tests</td><td>pytest</td><td>Any API contract violation</td></tr>
+    <tr><td>Docker buildability</td><td>docker build</td><td>Dockerfile syntax or dependency error</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 12. SECURITY ─────────────────── -->
+<section id="s12">
+<h2>12. Security</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>Concern</th><th>Implementation</th></tr></thead>
+  <tbody>
+    <tr><td>Secrets management</td><td><code>.env</code> file (never committed); template in <code>.env.example</code></td></tr>
+    <tr><td>HTTPS</td><td>Nginx TLS termination; self-signed certs via <code>scripts/gen_certs.sh</code></td></tr>
+    <tr><td>Admin endpoint exposure</td><td><code>POST /admin/rollback</code> not proxied through Nginx to public</td></tr>
+    <tr><td>Data at rest</td><td>Docker volumes on OS-encrypted filesystem (BitLocker/LUKS)</td></tr>
+    <tr><td>Data in transit</td><td>Uploaded videos stored only in <code>/tmp</code> within container, deleted after inference</td></tr>
+    <tr><td>Sensitive env vars</td><td>POSTGRES_PASSWORD, GRAFANA_ADMIN_PASSWORD, AIRFLOW FERNET_KEY all customised before deploy</td></tr>
+    <tr><td>No cloud egress</td><td>All compute and data stays local — no external API calls</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 13. EVAL CRITERIA ─────────────────── -->
+<section id="s13">
+<h2>13. Evaluation Criteria Coverage</h2>
+
+<h3>13.1 Demonstration — 10 Points</h3>
+<h4>Web Application Front-end UI/UX [6 pts]</h4>
+<div class="table-wrap"><table>
+  <thead><tr><th>Criterion</th><th>Implementation</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>UX intuitive for non-technical users</td><td>Single drag-and-drop upload → instant result</td><td><code>Home.tsx</code>, <code>VideoUpload.tsx</code></td></tr>
+    <tr><td>Easy to use</td><td>3 steps: open → upload → read result; feedback in 1 click</td><td><code>user_manual.md</code></td></tr>
+    <tr><td>UX foolproof</td><td>File type validated client-side; error messages in plain English</td><td><code>VideoUpload.tsx</code> error handling</td></tr>
+    <tr><td>Free of UI errors</td><td>TypeScript throughout; ESLint in CI</td><td><code>.github/workflows/ci.yml</code></td></tr>
+    <tr><td>Look-and-feel</td><td>Dark glass design system; consistent color tokens; animated bars</td><td><code>frontend/src/</code></td></tr>
+    <tr><td>Responsive UI</td><td>Flexbox/grid; tested across viewport widths</td><td>Tailwind CSS classes</td></tr>
+    <tr><td>User manual</td><td>Step-by-step guide for non-technical users</td><td><code>docs/user_manual.md</code></td></tr>
+  </tbody>
+</table></div>
+
+<h4>ML Pipeline Visualization [4 pts]</h4>
+<div class="table-wrap"><table>
+  <thead><tr><th>Criterion</th><th>Implementation</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Separate UI screen</td><td>Full Pipeline Dashboard page</td><td><code>PipelineDashboard.tsx</code></td></tr>
+    <tr><td>Ingestion pipeline visualization</td><td>Airflow DAG status + run history</td><td><code>ErrorConsole.tsx</code></td></tr>
+    <tr><td>Pipeline management console</td><td>Airflow UI + stat cards</td><td>Airflow service in compose</td></tr>
+    <tr><td>Error/failure tracking</td><td>Color-coded console (OK/ERR/WRN)</td><td><code>ErrorConsole.tsx</code></td></tr>
+    <tr><td>Pipeline throughput</td><td><code>videos_per_minute</code> stat card</td><td><code>/pipeline/throughput</code></td></tr>
+  </tbody>
+</table></div>
+
+<h3>13.2 Software Engineering — 5 Points</h3>
+<h4>Design Principle [2 pts]</h4>
+<div class="table-wrap"><table>
+  <thead><tr><th>Criterion</th><th>Implementation</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Design document</td><td>Full HLD with architecture, data flow, design choices</td><td><code>docs/HLD.md</code></td></tr>
+    <tr><td>OO or functional paradigm</td><td>Mixed: OO for model (<code>nn.Module</code>), functional for routes and DAG operators</td><td><code>docs/HLD.md</code> §5</td></tr>
+    <tr><td>LLD with API specs</td><td>All 11 endpoints with request/response schemas</td><td><code>docs/LLD.md</code></td></tr>
+    <tr><td>Architecture diagram</td><td>Interactive SVG diagram</td><td><code>docs/architecture.html</code></td></tr>
+    <tr><td>Loose coupling</td><td>REST only; <code>VITE_API_URL</code>; no shared code</td><td><code>docs/HLD.md</code> §9</td></tr>
+  </tbody>
+</table></div>
+
+<h4>Implementation [2 pts] | Testing [1 pt]</h4>
+<div class="table-wrap"><table>
+  <thead><tr><th>Criterion</th><th>Implementation</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Python coding style</td><td>black + flake8 + isort enforced in CI</td><td><code>.github/workflows/ci.yml</code></td></tr>
+    <tr><td>Structured logging</td><td>python-json-logger; every request/event logged</td><td><code>logging_config.py</code></td></tr>
+    <tr><td>Exception handling</td><td>try/except on every route; typed HTTPException</td><td><code>predict.py</code>, <code>pipeline.py</code></td></tr>
+    <tr><td>Test plan</td><td>34 test cases TC-01 through TC-34</td><td><code>docs/test_plan.md</code></td></tr>
+    <tr><td>Test report</td><td>46 passed, 0 failed, 3 intentionally skipped</td><td><code>docs/test_report.md</code></td></tr>
+  </tbody>
+</table></div>
+
+<h3>13.3 MLOps Implementation — 12 Points</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Category</th><th>Criterion</th><th>Implementation</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Data Engineering [2]</td><td>Airflow ingestion pipeline</td><td>7-stage daily DAG</td><td><code>deepfake_pipeline.py</code></td></tr>
+    <tr><td>Source Control [2]</td><td>CI with DVC</td><td><code>dvc repro --dry</code> in every push</td><td><code>ci.yml</code></td></tr>
+    <tr><td>Experiment Tracking [2]</td><td>Beyond autolog</td><td>git_commit, per-epoch LR, confusion matrix, ROC, PR-AUC, per-class metrics</td><td><code>train.py</code></td></tr>
+    <tr><td>Instrumentation [2]</td><td>22 Prometheus metrics</td><td>9 counters, 5 gauges, 7 histograms, 3 summaries</td><td><code>metrics.py</code></td></tr>
+    <tr><td>Packaging [4]</td><td>MLflow APIification</td><td><code>mlflow.pyfunc.load_model()</code> in-process (superior to separate serve container)</td><td><code>model_loader.py</code></td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout callout-insight">
+  <div class="callout-label">Key Insight — MLflow APIification</div>
+  The project intentionally uses <code>mlflow.pyfunc.load_model()</code> in-process rather than a separate <code>mlflow models serve</code> container. This is superior: lower latency (no HTTP hop), fewer failure points, and the MLflow Model Registry still fully manages versioning and promotion. <strong>FastAPI IS the model server.</strong>
+</div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── 14. LIMITATIONS ─────────────────── -->
+<section id="s14">
+<h2>14. Known Limitations & Future Work</h2>
+
+<h3>14.1 Current Limitations</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Area</th><th>Limitation</th></tr></thead>
+  <tbody>
+    <tr><td>Training data</td><td>106 videos — model generalises well but would benefit from a larger, more diverse dataset</td></tr>
+    <tr><td>GPU support</td><td>Designed for CPU inference; training supports CUDA but not tested under load</td></tr>
+    <tr><td>Batch inference</td><td><code>/predict/batch</code> limited to 10 files; no async queue</td></tr>
+    <tr><td>E2E tests in CI</td><td>Require live Docker stack — skipped in CI; run manually</td></tr>
+    <tr><td>Face detection fallback</td><td>MTCNN no-face fallback to full frame may reduce accuracy for distant shots</td></tr>
+  </tbody>
+</table></div>
+
+<h3>14.2 Planned Improvements</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Item</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Background inference queue</td><td>Replace synchronous <code>/predict</code> with async task queue (Celery/Huey) for large files</td></tr>
+    <tr><td>Progressive fine-tuning</td><td>Unfreeze EfficientNet-B0 last 3 blocks after LSTM warms up</td></tr>
+    <tr><td>Video Transformer</td><td>Replace LSTM with a lightweight Video Transformer for better temporal modelling</td></tr>
+    <tr><td>Dataset expansion</td><td>Integrate FaceForensics++ and Celeb-DF for broader manipulation coverage</td></tr>
+    <tr><td>Canary deployment</td><td>A/B testing between model versions before full Production promotion</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<hr />
+
+<!-- ─────────────────── APPENDIX ─────────────────── -->
+<section id="appendix-a">
+<h2>Appendix A: File Structure</h2>
+<pre>deepfake-detection/
+├── backend/
+│   ├── app/
+│   │   ├── main.py                  FastAPI app entry point
+│   │   ├── model_loader.py          MLflow model singleton
+│   │   ├── preprocessing.py         Frame extraction + MTCNN + normalization
+│   │   ├── drift_detector.py        Z-score drift detection
+│   │   ├── explainability.py        Grad-CAM heatmap generation
+│   │   ├── metrics.py               22 Prometheus metric definitions
+│   │   ├── feedback_logger.py       JSONL ground-truth feedback log
+│   │   ├── schemas.py               Pydantic request/response schemas
+│   │   └── routers/
+│   │       ├── predict.py
+│   │       ├── pipeline.py
+│   │       └── admin.py
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── pages/                   Home, PipelineDashboard, Admin, Login
+│   │   ├── components/              VideoUpload, ResultCard, ErrorConsole, FaceScan
+│   │   ├── api/client.ts
+│   │   └── auth/AuthContext.tsx
+│   └── Dockerfile
+├── ml/
+│   ├── model.py                     DeepfakeDetector (EfficientNet-B0 + LSTM)
+│   ├── train.py                     Training loop + MLflow tracking
+│   ├── evaluate.py                  Evaluation + extended metrics
+│   ├── quantize.py                  INT8 dynamic quantization
+│   ├── preprocessing_pipeline.py   DVC stage implementations
+│   ├── params.yaml                  Hyperparameter config
+│   └── MLproject                    MLflow project definition
+├── airflow/dags/
+│   ├── deepfake_pipeline.py         Daily data ingestion DAG
+│   └── retraining_dag.py            Weekly automated retraining DAG
+├── monitoring/
+│   ├── prometheus.yml
+│   ├── alert_rules.yml
+│   └── grafana/dashboards/
+├── tests/
+│   ├── unit/                        38 unit tests
+│   ├── integration/                 8 integration tests
+│   └── e2e/                         3 E2E tests (manual)
+├── docs/
+│   ├── HLD.md  LLD.md  architecture.html
+│   ├── test_plan.md  test_report.md  user_manual.md
+│   └── dvc_dag.md
+├── .github/workflows/ci.yml
+├── docker-compose.yml               10-service stack
+├── dvc.yaml                         7-stage ML pipeline
+├── dvc.lock
+└── .env.example</pre>
+</section>
+
+</main>
+</div>
+
+</body>
+</html>

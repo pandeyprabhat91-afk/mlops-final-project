@@ -1,0 +1,16 @@
+name: deepfake-detection
+
+conda_env: conda.yaml
+
+entry_points:
+  train:
+    parameters:
+      data_path: {type: str, default: "data/features"}
+      params_file: {type: str, default: "ml/params.yaml"}
+    command: "python ml/train.py --data_path {data_path} --params_file {params_file}"
+
+  evaluate:
+    parameters:
+      run_id: {type: str}
+      data_path: {type: str, default: "data/features"}
+    command: "python ml/evaluate.py --run_id {run_id} --data_path {data_path}"
