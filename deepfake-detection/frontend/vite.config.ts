@@ -13,6 +13,10 @@ export default defineConfig({
         // Strip /api prefix — matches nginx: location /api/ { proxy_pass http://backend:8000/; }
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/demo': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
     },
     // Enable polling for file watching inside Docker on Windows
     watch: {

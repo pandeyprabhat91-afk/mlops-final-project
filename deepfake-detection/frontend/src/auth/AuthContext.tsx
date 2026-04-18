@@ -6,6 +6,7 @@ interface AuthState {
   role: Role | null;
   username: string;
   login: (username: string, password: string) => boolean;
+  loginAsDemo: () => void;
   logout: () => void;
 }
 
@@ -30,10 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const logout = () => { setRole(null); setUsername(""); };
+  const loginAsDemo = () => { setRole("user"); setUsername("demo"); };
+  const logout = () => {
+    setRole(null);
+    setUsername("");
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("theme", "dark");
+    window.location.hash = "";
+    window.scrollTo(0, 0);
+  };
 
   return (
-    <AuthContext.Provider value={{ role, username, login, logout }}>
+    <AuthContext.Provider value={{ role, username, login, loginAsDemo, logout }}>
       {children}
     </AuthContext.Provider>
   );
