@@ -15,3 +15,5 @@ services:
     volumes:
       - ./frontend/src:/app/src
     command: npm run dev -- --host
+    mem_limit: 512m
+    mem_reservation: 256m

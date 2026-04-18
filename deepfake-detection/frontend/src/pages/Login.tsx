@@ -49,80 +49,40 @@ const steps = [
     n: "01",
     title: "Upload a video",
     desc: "Drag-and-drop any MP4 file up to 100 MB. Preview the first frame before submitting.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="3"/>
-        <path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none" opacity="0.7"/>
-      </svg>
-    ),
+    icon: <img src="/how-it-works/upload-a-video.png" alt="Upload a video" />,
   },
   {
     n: "02",
     title: "AI analyzes every frame",
     desc: "Our CNN+LSTM model samples 30 frames, extracts spatial features, and scores temporal coherence.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a10 10 0 1 0 10 10"/>
-        <path d="M12 6v6l4 2"/>
-        <path d="M22 2l-5 5M17 2h5v5" strokeWidth="2"/>
-      </svg>
-    ),
+    icon: <img src="/how-it-works/ai-analyzes-every-frame.png" alt="AI analyzes every frame" />,
   },
   {
     n: "03",
     title: "Get a full report",
     desc: "Verdict, confidence score, Grad-CAM heatmap, and a downloadable PDF — ready in under a second.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 12h6M9 16h6M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-        <path d="M13 2v7h7" fill="currentColor" opacity="0.15" stroke="none"/>
-        <polyline points="13 2 13 9 20 9"/>
-      </svg>
-    ),
+    icon: <img src="/how-it-works/get-a-full-report.png" alt="Get a full report" />,
   },
 ];
 
 const useCases = [
   {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 11a9 9 0 0 1 9 9"/>
-        <path d="M4 4a16 16 0 0 1 16 16"/>
-        <circle cx="5" cy="19" r="2" fill="currentColor" stroke="none"/>
-      </svg>
-    ),
+    icon: <img src="/built-for-every-team/news-verification.png" alt="News Verification" />,
     title: "News Verification",
     desc: "Journalists and fact-checkers validate video authenticity before publication.",
   },
   {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M19 8l2 2 4-4" strokeWidth="2.5"/>
-      </svg>
-    ),
+    icon: <img src="/built-for-every-team/hiring-screening.png" alt="Hiring Screening" />,
     title: "Hiring Screening",
     desc: "HR teams screen video interviews for AI-generated or manipulated candidate footage.",
   },
   {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/>
-        <line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-    ),
+    icon: <img src="/built-for-every-team/content-moderation.png" alt="Content Moderation" />,
     title: "Content Moderation",
     desc: "Platforms automatically flag synthetic media before it reaches audiences.",
   },
   {
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        <path d="M9 12l2 2 4-4" strokeWidth="2.5"/>
-      </svg>
-    ),
+    icon: <img src="/built-for-every-team/legal-evidence.png" alt="Legal Evidence" />,
     title: "Legal Evidence",
     desc: "Legal teams verify that submitted video evidence has not been tampered with.",
   },
@@ -241,7 +201,7 @@ const plans = [
   {
     name: "Pro",
     tag: "Most popular",
-    price: "29",
+    price: "2,499",
     highlight: true,
     features: ["Unlimited analyses", "Grad-CAM heatmap", "Full history + stats", "PDF + JSON reports", "Batch processing", "Priority support"],
   },
@@ -583,7 +543,7 @@ export const Login: React.FC = () => {
                     <span className="lp-plan-price-custom">Custom</span>
                   ) : (
                     <>
-                      <span className="lp-plan-currency">$</span>
+                      <span className="lp-plan-currency">₹</span>
                       <span className="lp-plan-amount">{plan.price}</span>
                       <span className="lp-plan-period">/mo</span>
                     </>

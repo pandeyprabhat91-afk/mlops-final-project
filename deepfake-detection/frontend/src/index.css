@@ -3027,54 +3027,52 @@ body {
 .lp-trust        { background: #111a13; }
 
 /* ─────────────────────────────────────────────────────────────
-   HOW IT WORKS — sticky sidebar + step rows
+   HOW IT WORKS — vertical stack of horizontal rows
 ───────────────────────────────────────────────────────────── */
-.lp-howitworks .lp-inner { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: start; }
-.lp-howitworks .lp-section-header { position: sticky; top: 6rem; margin-bottom: 0; }
-.lp-steps { display: flex; flex-direction: column; }
+.lp-howitworks .lp-inner { display: flex; flex-direction: column; gap: 2rem; }
+.lp-howitworks .lp-section-header { position: static; margin-bottom: 0; }
+.lp-steps { display: flex; flex-direction: column; gap: 1rem; }
 .lp-step {
-  display: grid; grid-template-columns: 56px 1fr; gap: 1.25rem;
-  padding: 2rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: row; align-items: center;
+  gap: 2rem; padding: 1.25rem 1.75rem;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; background: rgba(255,255,255,0.02);
 }
-.lp-step:first-child { padding-top: 0; }
-.lp-step:last-child  { border-bottom: none; padding-bottom: 0; }
-.lp-step-left { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding-top: 0.1rem; }
+.lp-step-left { display: flex; flex-direction: row; align-items: center; gap: 1.25rem; flex-shrink: 0; }
 .lp-step-num { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; color: #34a85a; line-height: 1; }
 .lp-step-icon {
-  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-  background: rgba(52,168,90,0.12);
-  border: 1px solid rgba(52,168,90,0.25);
-  border-radius: 12px; color: #4ade80; flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  width: 240px; height: 240px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; border-radius: 0; color: #4ade80; flex-shrink: 0; box-shadow: none;
 }
-.lp-step-content { padding-top: 0.15rem; }
+.lp-step-icon img { width: 240px; height: 240px; object-fit: contain; }
+.lp-step-content { padding-top: 0; }
 .lp-step-title { font-size: 1rem; font-weight: 600; color: #f5f5f0; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
-.lp-step-desc  { font-size: 0.875rem; color: rgba(255,255,255,0.42); line-height: 1.65; margin: 0; max-width: 46ch; }
+.lp-step-desc  { font-size: 0.875rem; color: rgba(255,255,255,0.42); line-height: 1.65; margin: 0; }
 .lp-step-connector { display: none !important; }
 
 /* ─────────────────────────────────────────────────────────────
-   USE CASES — 2x2 asymmetric mosaic grid
+   USE CASES — 4-column compact cards
 ───────────────────────────────────────────────────────────── */
 .lp-usecases .lp-section-header { max-width: 640px; }
 .lp-usecase-grid {
-  display: grid; grid-template-columns: 5fr 4fr;
-  gap: 1px; background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; overflow: hidden;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
 }
-.lp-usecase-card { padding: 2.25rem 2rem; background: #0d0f0d; transition: background 0.2s; }
-.lp-usecase-card:hover { background: #0f1510; }
+.lp-usecase-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 2rem 1.25rem; background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.lp-usecase-card:hover { background: #0f1510; border-color: rgba(52,168,90,0.25); }
 .lp-usecase-icon {
-  width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
-  background: rgba(52,168,90,0.12);
-  border: 1px solid rgba(52,168,90,0.22);
-  border-radius: 14px; color: #4ade80; margin-bottom: 1.25rem;
-  transition: border-color 0.2s, background 0.2s;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(52,168,90,0.08);
+  width: 216px; height: 216px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; border-radius: 0; color: #4ade80; margin-bottom: 1rem;
+  transition: transform 0.2s; box-shadow: none;
 }
+.lp-usecase-icon img { width: 216px; height: 216px; object-fit: contain; }
 .lp-usecase-card:hover .lp-usecase-icon {
-  background: rgba(52,168,90,0.18);
-  border-color: rgba(52,168,90,0.45);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 16px rgba(52,168,90,0.15);
+  transform: scale(1.06);
 }
 .lp-usecase-title { font-size: 1rem; font-weight: 600; color: #f5f5f0; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
 .lp-usecase-desc  { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.6; margin: 0; max-width: 38ch; }
@@ -3182,15 +3180,17 @@ body {
    RESPONSIVE
 ───────────────────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .lp-howitworks .lp-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-  .lp-howitworks .lp-section-header { position: static; }
-  .lp-usecase-grid { grid-template-columns: 1fr; }
+  .lp-steps { grid-template-columns: 1fr; }
+  .lp-usecase-grid { grid-template-columns: repeat(2, 1fr); }
   .lp-carousel-wrap { -webkit-mask-image: none; mask-image: none; } /* avoid edge clip on small screens */
   .lp-plan-grid { grid-template-columns: 1fr; }
   .lp-bottom-cta { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; }
 }
 @media (max-width: 640px) {
-  .lp-step { grid-template-columns: 40px 1fr; gap: 1rem; }
-  .lp-step-icon { width: 38px; height: 38px; }
+  .lp-usecase-grid { grid-template-columns: 1fr; }
+  .lp-step { flex-direction: column; align-items: center; text-align: center; }
+  .lp-step-left { flex-direction: column; align-items: center; }
+  .lp-step-icon { width: 180px; height: 180px; }
+  .lp-step-icon img { width: 180px; height: 180px; }
 }
 
