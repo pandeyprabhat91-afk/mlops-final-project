@@ -231,10 +231,11 @@ function StatPill({ stat }: { stat: typeof stats[number] }) {
 
 // ── Main component ───────────────────────────────────────────────────────────
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, loginAsDemo } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [demoState, setDemoState] = useState<"idle" | "loading" | "denied">("idle");
 
   // Parallax for decorative orb
   const rootRef = useRef<HTMLDivElement>(null);
@@ -246,6 +247,21 @@ export const Login: React.FC = () => {
     e.preventDefault();
     setError("");
     if (!login(username, password)) setError("Incorrect username or password.");
+  };
+
+  const handleDemoStart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDemoState("loading");
+    try {
+      const res = await fetch("/demo/start", { method: "POST" });
+      if (res.ok) {
+        loginAsDemo();
+      } else {
+        setDemoState("denied");
+      }
+    } catch {
+      setDemoState("denied");
+    }
   };
 
   return (
@@ -279,15 +295,14 @@ export const Login: React.FC = () => {
             <motion.div className="login-tagline" {...fade(0.1)}>
               <div className="login-eyebrow">
                 <span className="login-eyebrow-dot" />
-                Model active · CNN+LSTM
+                AI-Powered Deepfake Detection
               </div>
               <h2 className="login-tagline-text">
-                Every frame<br />holds a{" "}
-                <span className="login-gradient-word">secret.</span>
+                Is that video{" "}
+                <span className="login-gradient-word">real?</span>
               </h2>
               <p className="login-tagline-sub">
-                CNN&nbsp;+&nbsp;LSTM neural network trained on the SDFVD dataset.
-                Detects AI-generated faces with clinical precision.
+                Upload any video and DeepScan tells you in seconds whether it's genuine or AI-generated — with frame-level heatmaps showing exactly where the manipulation is.
               </p>
             </motion.div>
 
@@ -298,10 +313,18 @@ export const Login: React.FC = () => {
 
             {/* Dual CTA — visible on left panel */}
             <motion.div className="lp-hero-cta" {...fade(0.45)}>
-              <a href="#signup" className="lp-btn-primary">
-                Try DeepScan free
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
+              <motion.button
+                className="lp-btn-primary"
+                onClick={handleDemoStart}
+                disabled={demoState === "loading"}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+              >
+                {demoState === "loading" ? "Starting…" : "Start for free"}
+                {demoState !== "loading" && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>}
+              </motion.button>
+              {demoState === "denied" && (
+                <span className="lp-demo-denied">Demo already used from this device.</span>
+              )}
               <a href="#how-it-works" className="lp-btn-ghost">See how it works</a>
             </motion.div>
 
@@ -319,7 +342,7 @@ export const Login: React.FC = () => {
             >
               <div className="login-card-accent" />
               <h1 className="login-heading">Welcome back</h1>
-              <p className="login-sub">Sign in to access the analysis platform</p>
+              <p className="login-sub">Sign in to DeepScan — AI deepfake detection platform</p>
 
               <form onSubmit={handleSubmit} style={{ marginTop: "28px" }}>
                 <div className="login-field">
@@ -608,28 +631,34 @@ export const Login: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ type: "spring", stiffness: 180, damping: 18, delay: 0.3 }}
-              >Ready to detect deepfakes?</motion.h2>
+              >Detect deepfakes in seconds.</motion.h2>
               <motion.p
                 className="lp-bottom-cta-sub"
                 initial={{ opacity: 0, x: -24 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ type: "spring", stiffness: 180, damping: 18, delay: 0.38 }}
-              >Sign in with a demo account — no credit card, no setup.</motion.p>
+              >Try a free demo — upload any video and get an instant real/fake verdict with Grad-CAM explanation. No credit card needed.</motion.p>
             </div>
-            <motion.a
-              href="#signup"
-              className="lp-btn-primary lp-btn-primary--lg"
-              initial={{ opacity: 0, scale: 0.88 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.44 }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              Start for free
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </motion.a>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.5rem" }}>
+              <motion.button
+                className="lp-btn-primary lp-btn-primary--lg"
+                onClick={handleDemoStart}
+                disabled={demoState === "loading"}
+                initial={{ opacity: 0, scale: 0.88 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.44 }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {demoState === "loading" ? "Starting…" : "Start for free"}
+                {demoState !== "loading" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>}
+              </motion.button>
+              {demoState === "denied" && (
+                <span className="lp-demo-denied">Demo already used from this device.</span>
+              )}
+            </div>
           </motion.div>
         </div>
       </section>

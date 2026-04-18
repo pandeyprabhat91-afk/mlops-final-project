@@ -39,6 +39,7 @@ from backend.app.metrics import (
 from backend.app.preprocessing import preprocess_video
 from typing import List, Literal
 
+from backend.app.demo_store import has_used_demo, record_demo_use
 from backend.app.history_store import (
     HISTORY_PATH,  # noqa: F401  imported so tests can monkeypatch it
     save_prediction,
@@ -333,6 +334,16 @@ async def predict_batch(request: Request, files: List[UploadFile] = File(...)):
     return BatchPredictResponse(
         results=results, total=len(results), succeeded=succeeded, failed=failed
     )
+
+
+@router.post("/demo/start")
+async def demo_start(request: Request):
+    """Grant a one-time demo session per IP. Returns 403 if already used."""
+    ip = _client_ip(request)
+    if has_used_demo(ip):
+        raise HTTPException(status_code=403, detail="Demo already used from this IP address")
+    record_demo_use(ip)
+    return {"status": "ok", "username": "demo"}
 
 
 @router.get("/history", response_model=list[HistoryRecord])

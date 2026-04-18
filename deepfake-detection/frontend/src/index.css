@@ -2994,6 +2994,8 @@ body {
 .lp-btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
 .lp-btn-primary:active { transform: translateY(1px); opacity: 1; }
 .lp-btn-primary--lg    { padding: 0.85rem 2rem; font-size: 1rem; border-radius: 12px; }
+.lp-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.lp-demo-denied { font-size: 0.78rem; color: #f87171; letter-spacing: 0.01em; }
 .lp-btn-ghost {
   font-size: 0.875rem; color: rgba(255,255,255,0.5); text-decoration: none;
   border-bottom: 1px solid rgba(255,255,255,0.18); padding-bottom: 2px;
@@ -3027,23 +3029,26 @@ body {
 .lp-trust        { background: #111a13; }
 
 /* ─────────────────────────────────────────────────────────────
-   HOW IT WORKS — vertical stack of horizontal rows
+   HOW IT WORKS — 3-column compact cards (mirrors Built for every team)
 ───────────────────────────────────────────────────────────── */
 .lp-howitworks .lp-inner { display: flex; flex-direction: column; gap: 2rem; }
 .lp-howitworks .lp-section-header { position: static; margin-bottom: 0; }
-.lp-steps { display: flex; flex-direction: column; gap: 1rem; }
+.lp-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 .lp-step {
-  display: flex; flex-direction: row; align-items: center;
-  gap: 2rem; padding: 1.25rem 1.75rem;
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px; background: rgba(255,255,255,0.02);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 2rem 1.25rem; background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
+  transition: background 0.2s, border-color 0.2s; gap: 0;
 }
-.lp-step-left { display: flex; flex-direction: row; align-items: center; gap: 1.25rem; flex-shrink: 0; }
+.lp-step:hover { background: #0f1510; border-color: rgba(52,168,90,0.25); }
+.lp-step-left { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
 .lp-step-num { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; color: #34a85a; line-height: 1; }
 .lp-step-icon {
   width: 240px; height: 240px; display: flex; align-items: center; justify-content: center;
   background: none; border: none; border-radius: 0; color: #4ade80; flex-shrink: 0; box-shadow: none;
+  transition: transform 0.2s; margin-bottom: 1rem;
 }
+.lp-step:hover .lp-step-icon { transform: scale(1.06); }
 .lp-step-icon img { width: 240px; height: 240px; object-fit: contain; }
 .lp-step-content { padding-top: 0; }
 .lp-step-title { font-size: 1rem; font-weight: 600; color: #f5f5f0; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
@@ -3051,23 +3056,23 @@ body {
 .lp-step-connector { display: none !important; }
 
 /* ─────────────────────────────────────────────────────────────
-   USE CASES — 4-column compact cards
+   USE CASES — 2x2 grid
 ───────────────────────────────────────────────────────────── */
 .lp-usecases .lp-section-header { max-width: 640px; }
 .lp-usecase-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
+  display: grid; grid-template-columns: repeat(2, fit-content(480px));
+  gap: 1rem; justify-content: center;
 }
 .lp-usecase-card {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 2rem 1.25rem; background: rgba(255,255,255,0.02);
+  padding: 1.25rem 1rem; background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s; width: fit-content;
 }
 .lp-usecase-card:hover { background: #0f1510; border-color: rgba(52,168,90,0.25); }
 .lp-usecase-icon {
   width: 216px; height: 216px; display: flex; align-items: center; justify-content: center;
-  background: none; border: none; border-radius: 0; color: #4ade80; margin-bottom: 1rem;
+  background: none; border: none; border-radius: 0; color: #4ade80; margin-bottom: 0.75rem;
   transition: transform 0.2s; box-shadow: none;
 }
 .lp-usecase-icon img { width: 216px; height: 216px; object-fit: contain; }
@@ -3119,6 +3124,16 @@ body {
 .lp-testimonial-avatar { width: 34px; height: 34px; border-radius: 50%; background: #34a85a; color: #000; font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .lp-testimonial-name { font-size: 0.82rem; font-weight: 600; color: #f5f5f0; margin: 0 0 0.1rem; letter-spacing: -0.01em; }
 .lp-testimonial-role { font-size: 0.72rem; color: rgba(255,255,255,0.32); margin: 0; line-height: 1.4; }
+
+/* Testimonials — light mode overrides */
+[data-theme="light"] .lp-testimonials { background: #f0f4f1; }
+[data-theme="light"] .lp-testimonials .lp-section-title { color: #111; }
+[data-theme="light"] .lp-testimonials .lp-section-sub { color: rgba(0,0,0,0.55); }
+[data-theme="light"] .lp-testimonial-card { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+[data-theme="light"] .lp-testimonial-text { color: rgba(0,0,0,0.65); }
+[data-theme="light"] .lp-testimonial-author { border-top-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .lp-testimonial-name { color: #111; }
+[data-theme="light"] .lp-testimonial-role { color: rgba(0,0,0,0.45); }
 
 /* ─────────────────────────────────────────────────────────────
    PRICING — 3 cols, center card highlighted
