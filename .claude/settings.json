@@ -9,7 +9,8 @@
       "Read(//c/Users/lonew/.claude/skills/**)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\lonew\\AppData\\Roaming\\Docker"
+      "C:\\Users\\lonew\\AppData\\Roaming\\Docker",
+      "f:\\mlops project\\deepfake-detection\\.git"
     ]
   }
 }
