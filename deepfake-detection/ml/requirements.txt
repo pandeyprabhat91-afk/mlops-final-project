@@ -1,0 +1,16 @@
+torch==2.2.1
+torchvision==0.17.1
+efficientnet-pytorch==0.7.1
+facenet-pytorch==2.5.3
+mlflow==2.11.1
+dvc==3.48.4
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+pandas==2.2.1
+scikit-learn==1.4.1
+matplotlib==3.8.3
+Pillow==10.2.0
+pytest==8.1.0
+black==24.3.0
+flake8==7.0.0
+isort==5.13.2

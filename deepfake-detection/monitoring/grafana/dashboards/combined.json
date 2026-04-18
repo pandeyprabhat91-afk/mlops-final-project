@@ -1,0 +1,494 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": {"list": []},
+  "description": "Deepfake Detection — unified view of inference, drift, pipeline, and infrastructure",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 100,
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "yellow", "value": 5},
+            {"color": "red", "value": 20}
+          ]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 1},
+      "id": 1,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "deepfake_active_requests", "legendFormat": "Active", "refId": "A"}],
+      "title": "Active Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}, "unit": "reqps"},
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 5, "x": 4, "y": 1},
+      "id": 2,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "sum(rate(deepfake_requests_total[5m]))", "legendFormat": "req/s", "refId": "A"}],
+      "title": "Request Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.01}, {"color": "red", "value": 0.05}]}, "unit": "percentunit"},
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 5, "x": 9, "y": 1},
+      "id": 3,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "sum(rate(deepfake_errors_total[5m])) / sum(rate(deepfake_requests_total[5m]))", "legendFormat": "Error %", "refId": "A"}],
+      "title": "Error Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 2.0}, {"color": "red", "value": 3.0}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 4, "x": 14, "y": 1},
+      "id": 4,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "deepfake_drift_score", "legendFormat": "Drift", "refId": "A"}],
+      "title": "Drift Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}, "unit": "mbytes"},
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+      "id": 5,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "value"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "deepfake_model_memory_mb", "legendFormat": "Model RAM", "refId": "A"}],
+      "title": "Model Memory",
+      "type": "stat"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5},
+      "id": 101,
+      "title": "Inference & Latency",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "reqps"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+      "id": 10,
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list"}},
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (mode) (rate(deepfake_requests_total{status=\"200\"}[5m]))", "legendFormat": "success {{mode}}", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (error_type) (rate(deepfake_errors_total[5m]))", "legendFormat": "error {{error_type}}", "refId": "B"}
+      ],
+      "title": "Request Rate by Mode & Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "ms"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+      "id": 11,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.99, sum by (le,mode) (rate(deepfake_inference_latency_ms_bucket[5m])))", "legendFormat": "p99 {{mode}}", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le,mode) (rate(deepfake_inference_latency_ms_bucket[5m])))", "legendFormat": "p95 {{mode}}", "refId": "B"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.50, sum by (le,mode) (rate(deepfake_inference_latency_ms_bucket[5m])))", "legendFormat": "p50 {{mode}}", "refId": "C"}
+      ],
+      "title": "Inference Latency p50/p95/p99 (ms)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "ms"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+      "id": 12,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le,mode) (rate(deepfake_preprocessing_latency_ms_bucket[5m])))", "legendFormat": "preprocessing p95 {{mode}}", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le,mode) (rate(deepfake_request_latency_seconds_bucket[5m]))) * 1000", "legendFormat": "request p95 {{mode}}", "refId": "B"}
+      ],
+      "title": "Preprocessing vs Request Latency p95 (ms)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14},
+      "id": 13,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(deepfake_inference_processing_seconds_sum) / sum(deepfake_inference_processing_seconds_count)", "legendFormat": "Avg inference (s)", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum(deepfake_request_processing_seconds_sum) / sum(deepfake_request_processing_seconds_count)", "legendFormat": "Avg request (s)", "refId": "B"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum(deepfake_preprocessing_processing_seconds_sum) / sum(deepfake_preprocessing_processing_seconds_count)", "legendFormat": "Avg preprocessing (s)", "refId": "C"}
+      ],
+      "title": "Summary — Average Processing Times (s)",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 22},
+      "id": 102,
+      "title": "Prediction Analytics",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 23},
+      "id": 20,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (label) (rate(deepfake_predictions_total[5m]))", "legendFormat": "{{label}}", "refId": "A"}
+      ],
+      "title": "Fake vs Real Prediction Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 23},
+      "id": 21,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (source_type) (rate(deepfake_predictions_total[5m]))", "legendFormat": "{{source_type}}", "refId": "A"}
+      ],
+      "title": "Requests by Source Type (web / api)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 23},
+      "id": 22,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.50, sum by (le, prediction) (rate(deepfake_confidence_score_bucket[10m])))", "legendFormat": "p50 conf {{prediction}}", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le, prediction) (rate(deepfake_confidence_score_bucket[10m])))", "legendFormat": "p95 conf {{prediction}}", "refId": "B"}
+      ],
+      "title": "Confidence Score Distribution p50/p95",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 31},
+      "id": 23,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(increase(deepfake_images_processed_total[1h]))", "legendFormat": "Total processed (1h)", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum by (mode) (increase(deepfake_images_processed_total{status=\"success\"}[1h]))", "legendFormat": "success {{mode}} (1h)", "refId": "B"}
+      ],
+      "title": "Images Processed (1h window)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 31},
+      "id": 24,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(increase(deepfake_frames_extracted_total[5m]))", "legendFormat": "frames/5m", "refId": "A"}
+      ],
+      "title": "Frames Extracted Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "bytes"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 31},
+      "id": 25,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le) (rate(deepfake_video_size_bytes_bucket[10m])))", "legendFormat": "p95 size", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.50, sum by (le) (rate(deepfake_video_size_bytes_bucket[10m])))", "legendFormat": "p50 size", "refId": "B"}
+      ],
+      "title": "Uploaded Video Size Distribution",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 39},
+      "id": 103,
+      "title": "Model Drift",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 2.0}, {"color": "red", "value": 3.0}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 40},
+      "id": 30,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "deepfake_drift_score", "legendFormat": "Score", "refId": "A"}],
+      "title": "Current Drift Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 18, "x": 6, "y": 40},
+      "id": 31,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "deepfake_drift_score", "legendFormat": "Drift z-score", "refId": "A"}],
+      "title": "Drift Score Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 48},
+      "id": 32,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "rate(deepfake_drift_detected_total[1h])", "legendFormat": "Drift detections/hr", "refId": "A"}],
+      "title": "Drift Detection Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "percentunit"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 48},
+      "id": 33,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "rate(deepfake_predictions_total{label=\"fake\"}[5m]) / rate(deepfake_predictions_total[5m])", "legendFormat": "Fake prediction rate", "refId": "A"}],
+      "title": "Fake Prediction Rate (label shift indicator)",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 56},
+      "id": 104,
+      "title": "Data Pipeline (Airflow)",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 57},
+      "id": 40,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "airflow_task_duration", "legendFormat": "{{task_id}}", "refId": "A"}],
+      "title": "Airflow Task Durations",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 57},
+      "id": 41,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "rate(airflow_dag_run_success_total[1h])", "legendFormat": "DAG success/hr", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "rate(airflow_dag_run_failed_total[1h])", "legendFormat": "DAG failure/hr", "refId": "B"}
+      ],
+      "title": "DAG Success vs Failure Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 65},
+      "id": 42,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "increase(pipeline_validation_failures_total[1h])", "legendFormat": "Validation failures", "refId": "A"}],
+      "title": "Pipeline Validation Failures (1h)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 65},
+      "id": 43,
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "rate(airflow_dag_run_duration_sum[5m]) / rate(airflow_dag_run_duration_count[5m])", "legendFormat": "Avg DAG run duration", "refId": "A"}],
+      "title": "DAG Run Duration (avg)",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 73},
+      "id": 105,
+      "title": "Infrastructure (node_exporter)",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "percentunit",
+          "max": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.7}, {"color": "red", "value": 0.9}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 74},
+      "id": 50,
+      "targets": [
+        {
+          "datasource": {"type": "prometheus"},
+          "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[2m]))",
+          "legendFormat": "CPU utilization",
+          "refId": "A"
+        },
+        {
+          "datasource": {"type": "prometheus"},
+          "expr": "avg by (cpu) (rate(node_cpu_seconds_total{mode!=\"idle\",mode!=\"iowait\"}[2m]))",
+          "legendFormat": "CPU {{cpu}} user+sys",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "palette-classic"}, "unit": "bytes"},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 74},
+      "id": 51,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes", "legendFormat": "Used RAM", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "node_memory_MemAvailable_bytes", "legendFormat": "Available RAM", "refId": "B"},
+        {"datasource": {"type": "prometheus"}, "expr": "node_memory_MemTotal_bytes", "legendFormat": "Total RAM", "refId": "C"}
+      ],
+      "title": "Memory Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "Bps"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 82},
+      "id": 52,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(rate(node_disk_read_bytes_total[2m]))", "legendFormat": "Disk read", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum(rate(node_disk_written_bytes_total[2m]))", "legendFormat": "Disk write", "refId": "B"}
+      ],
+      "title": "Disk I/O Throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "Bps"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 82},
+      "id": 53,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(rate(node_network_receive_bytes_total{device!~\"lo|docker.*|veth.*\"}[2m]))", "legendFormat": "Network in", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "sum(rate(node_network_transmit_bytes_total{device!~\"lo|docker.*|veth.*\"}[2m]))", "legendFormat": "Network out", "refId": "B"}
+      ],
+      "title": "Network Traffic (excl. loopback/docker)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {
+        "defaults": {"color": {"mode": "thresholds"}, "unit": "percentunit", "max": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.7}, {"color": "red", "value": 0.85}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 90},
+      "id": 54,
+      "targets": [
+        {
+          "datasource": {"type": "prometheus"},
+          "expr": "(node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"} - node_filesystem_free_bytes{fstype!~\"tmpfs|overlay\"}) / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"}",
+          "legendFormat": "{{mountpoint}} used",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Space Utilization by Mount",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "short"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 90},
+      "id": 55,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "node_load1", "legendFormat": "Load 1m", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "node_load5", "legendFormat": "Load 5m", "refId": "B"},
+        {"datasource": {"type": "prometheus"}, "expr": "node_load15", "legendFormat": "Load 15m", "refId": "C"}
+      ],
+      "title": "System Load Average",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 98},
+      "id": 106,
+      "title": "App ↔ Infrastructure Correlation",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": [
+        {"matcher": {"id": "byName", "options": "req/s"}, "properties": [{"id": "unit", "value": "reqps"}, {"id": "custom.axisPlacement", "value": "left"}]},
+        {"matcher": {"id": "byName", "options": "CPU"}, "properties": [{"id": "unit", "value": "percentunit"}, {"id": "custom.axisPlacement", "value": "right"}]}
+      ]},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 99},
+      "id": 60,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "sum(rate(deepfake_requests_total[2m]))", "legendFormat": "req/s", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[2m]))", "legendFormat": "CPU", "refId": "B"}
+      ],
+      "title": "Request Rate vs CPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": [
+        {"matcher": {"id": "byName", "options": "p95 infer (ms)"}, "properties": [{"id": "unit", "value": "ms"}, {"id": "custom.axisPlacement", "value": "left"}]},
+        {"matcher": {"id": "byName", "options": "RAM used"}, "properties": [{"id": "unit", "value": "bytes"}, {"id": "custom.axisPlacement", "value": "right"}]}
+      ]},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 99},
+      "id": 61,
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, sum by (le) (rate(deepfake_inference_latency_ms_bucket[2m])))", "legendFormat": "p95 infer (ms)", "refId": "A"},
+        {"datasource": {"type": "prometheus"}, "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes", "legendFormat": "RAM used", "refId": "B"}
+      ],
+      "title": "Inference Latency vs Memory Pressure",
+      "type": "timeseries"
+    }
+
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["deepfake", "combined", "inference", "drift", "pipeline", "infrastructure"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Deepfake Detection — Overview",
+  "uid": "deepfake-combined",
+  "version": 1
+}

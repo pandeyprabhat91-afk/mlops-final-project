@@ -1,0 +1,110 @@
+[
+  {
+    "id": "HR-4C9E0600",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.85,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:42:13.962388+00:00"
+  },
+  {
+    "id": "HR-ADC3F26B",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.9,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:42:14.426493+00:00"
+  },
+  {
+    "id": "HR-1F09ACA8",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "real",
+    "confidence": 0.1,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:42:14.889122+00:00"
+  },
+  {
+    "id": "HR-E8A1E39B",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.85,
+    "inference_latency_ms": 0.576019287109375,
+    "timestamp": "2026-04-16T15:43:46.813426+00:00"
+  },
+  {
+    "id": "HR-46EE9620",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.9,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:43:47.243732+00:00"
+  },
+  {
+    "id": "HR-50B4B925",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "real",
+    "confidence": 0.1,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:43:47.612099+00:00"
+  },
+  {
+    "id": "HR-94B4E6C0",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.85,
+    "inference_latency_ms": 1.5065670013427734,
+    "timestamp": "2026-04-16T15:45:24.828472+00:00"
+  },
+  {
+    "id": "HR-CDD65D49",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.9,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:45:25.203118+00:00"
+  },
+  {
+    "id": "HR-B222AB70",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "real",
+    "confidence": 0.1,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:45:25.566570+00:00"
+  },
+  {
+    "id": "HR-6C2F27A9",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.85,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:46:05.777305+00:00"
+  },
+  {
+    "id": "HR-7C3F9458",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "fake",
+    "confidence": 0.9,
+    "inference_latency_ms": 1.0046958923339844,
+    "timestamp": "2026-04-16T15:46:06.190614+00:00"
+  },
+  {
+    "id": "HR-071C6A72",
+    "username": "anonymous",
+    "filename": "test.mp4",
+    "prediction": "real",
+    "confidence": 0.1,
+    "inference_latency_ms": 0.0,
+    "timestamp": "2026-04-16T15:46:06.594955+00:00"
+  }
+]
