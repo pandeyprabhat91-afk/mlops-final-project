@@ -13,6 +13,7 @@ import { History } from "./pages/History";
 import { Batch } from "./pages/Batch";
 import { ModelCard } from "./pages/ModelCard";
 import { Stats } from "./pages/Stats";
+import Dashboard from "./pages/Dashboard";
 import { AnimatePresence, motion } from "framer-motion";
 import "./App.css";
 
@@ -59,9 +60,10 @@ function Nav() {
           <Link to="/model" className={`nav-link ${pathname === "/model" ? "active" : ""}`}>Model</Link>
           {role === "admin" && (
             <>
-              <Link to="/pipeline" className={`nav-link ${pathname === "/pipeline" ? "active" : ""}`}>Pipeline</Link>
-              <Link to="/admin"    className={`nav-link ${pathname === "/admin"    ? "active" : ""}`}>Admin</Link>
-              <Link to="/tickets"  className={`nav-link ${pathname === "/tickets"  ? "active" : ""}`}>Tickets</Link>
+              <Link to="/dashboard" className={`nav-link ${pathname === "/dashboard" ? "active" : ""}`}>Dashboard</Link>
+              <Link to="/pipeline"  className={`nav-link ${pathname === "/pipeline"  ? "active" : ""}`}>Pipeline</Link>
+              <Link to="/admin"     className={`nav-link ${pathname === "/admin"     ? "active" : ""}`}>Admin</Link>
+              <Link to="/tickets"   className={`nav-link ${pathname === "/tickets"   ? "active" : ""}`}>Tickets</Link>
             </>
           )}
         </div>
@@ -143,6 +145,7 @@ function AppShell() {
           <Route path="/batch" element={<PageWrap><Batch /></PageWrap>} />
           <Route path="/model" element={<PageWrap><ModelCard /></PageWrap>} />
           <Route path="/stats" element={<PageWrap><Stats /></PageWrap>} />
+          <Route path="/dashboard" element={<AdminRoute><PageWrap><Dashboard /></PageWrap></AdminRoute>} />
           <Route path="/pipeline" element={<AdminRoute><PageWrap><PipelineDashboard /></PageWrap></AdminRoute>} />
           <Route path="/admin"    element={<AdminRoute><PageWrap><Admin /></PageWrap></AdminRoute>} />
           <Route path="/tickets"  element={<AdminRoute><PageWrap><TicketAdmin /></PageWrap></AdminRoute>} />
