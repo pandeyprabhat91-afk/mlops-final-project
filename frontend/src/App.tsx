@@ -51,6 +51,10 @@ function Nav() {
 
         <div className="nav-divider" />
 
+        <span className="nav-dev-badge">Maj. Prabhat Pandey · DA25M002</span>
+
+        <div className="nav-divider" />
+
         <div className="nav-links">
           <Link to="/" className={`nav-link ${pathname === "/" ? "active" : ""}`}>Analyze</Link>
           <Link to="/batch" className={`nav-link ${pathname === "/batch" ? "active" : ""}`}>Batch</Link>
@@ -59,12 +63,33 @@ function Nav() {
           <Link id="help-nav-link" to="/help" className={`nav-link ${pathname === "/help" ? "active" : ""}`}>Help</Link>
           <Link to="/model" className={`nav-link ${pathname === "/model" ? "active" : ""}`}>Model</Link>
           {role === "admin" && (
-            <>
-              <Link to="/dashboard" className={`nav-link ${pathname === "/dashboard" ? "active" : ""}`}>Dashboard</Link>
-              <Link to="/pipeline"  className={`nav-link ${pathname === "/pipeline"  ? "active" : ""}`}>Pipeline</Link>
-              <Link to="/admin"     className={`nav-link ${pathname === "/admin"     ? "active" : ""}`}>Admin</Link>
-              <Link to="/tickets"   className={`nav-link ${pathname === "/tickets"   ? "active" : ""}`}>Tickets</Link>
-            </>
+            <div className="nav-dropdown" style={{ position: "relative" }} onMouseEnter={e => {
+              const menu = e.currentTarget.querySelector(".nav-dropdown-menu") as HTMLElement;
+              if (menu) menu.style.display = "flex";
+            }} onMouseLeave={e => {
+              const menu = e.currentTarget.querySelector(".nav-dropdown-menu") as HTMLElement;
+              if (menu) menu.style.display = "none";
+            }}>
+              <button type="button" className={`nav-link ${["/dashboard", "/pipeline", "/admin", "/tickets"].includes(pathname) ? "active" : ""}`} style={{ background: "transparent", border: "none", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", fontFamily: "inherit", padding: 0 }}>
+                Admin Panel
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div style={{ position: "absolute", top: "100%", left: 0, paddingTop: "0.5rem", zIndex: 10 }}>
+                <div className="nav-dropdown-menu" style={{
+                  display: "none", flexDirection: "column", background: "var(--glass-bg)", border: "1px solid var(--border)",
+                  borderRadius: "var(--r-md)", padding: "0.5rem", minWidth: "140px",
+                  boxShadow: "var(--shadow-sm)"
+                }}>
+                  <Link to="/dashboard" className={`nav-link ${pathname === "/dashboard" ? "active" : ""}`}>Dashboard</Link>
+                  <Link to="/pipeline"  className={`nav-link ${pathname === "/pipeline"  ? "active" : ""}`}>Pipeline</Link>
+                  <Link to="/tickets"   className={`nav-link ${pathname === "/tickets"   ? "active" : ""}`}>Tickets</Link>
+                  <div style={{ height: "1px", background: "var(--border)", margin: "0.25rem" }} />
+                  <Link to="/admin"     className={`nav-link ${pathname === "/admin"     ? "active" : ""}`}>Settings</Link>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

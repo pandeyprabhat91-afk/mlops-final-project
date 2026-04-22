@@ -804,6 +804,7 @@ export const Login: React.FC = () => {
             DeepScan
           </div>
           <p className="lp-footer-copy">© 2026 DeepScan · Built with MLOps best practices</p>
+          <p className="lp-footer-copy" style={{ marginTop: "4px", fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--accent)", fontWeight: 700 }}>Developed by: Maj. Prabhat Pandey (DA25M002)</p>
         </div>
       </footer>
 
