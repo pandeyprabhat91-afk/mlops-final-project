@@ -300,24 +300,37 @@ export default function Dashboard() {
             Live production metrics · {s.feedback_samples} ground-truth labels submitted
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1rem", marginBottom: "1.75rem" }}>
-            <KpiCard label="Live F1 Score" icon="◆" status={s.f1_score! >= 90 ? "ok" : s.f1_score! >= 75 ? "warn" : "bad"}
-              value={`${s.f1_score!.toFixed(1)}%`} sub="based on user feedback" />
-            <KpiCard label="Precision" icon="▣" status={s.precision! >= 90 ? "ok" : s.precision! >= 75 ? "warn" : "bad"}
-              value={`${s.precision!.toFixed(1)}%`} sub="of flagged, truly fake" />
-            <KpiCard label="Recall" icon="▤" status={s.recall! >= 90 ? "ok" : s.recall! >= 75 ? "warn" : "bad"}
-              value={`${s.recall!.toFixed(1)}%`} sub="fakes correctly caught" />
-            <KpiCard label="False Positive Rate" icon="!" status={s.fpr! <= 2 ? "ok" : s.fpr! <= 5 ? "warn" : "bad"}
-              value={`${s.fpr!.toFixed(2)}%`} sub="authentic wrongly flagged" />
+            {s.f1_score != null ? <KpiCard label="Live F1 Score" icon="◆" status={s.f1_score >= 90 ? "ok" : s.f1_score >= 75 ? "warn" : "bad"}
+              value={`${s.f1_score.toFixed(1)}%`} sub="based on user feedback" /> : <NullKpi label="Live F1 Score" icon="◆" />}
+            {s.precision != null ? <KpiCard label="Precision" icon="▣" status={s.precision >= 90 ? "ok" : s.precision >= 75 ? "warn" : "bad"}
+              value={`${s.precision.toFixed(1)}%`} sub="of flagged, truly fake" /> : <NullKpi label="Precision" icon="▣" />}
+            {s.recall != null ? <KpiCard label="Recall" icon="▤" status={s.recall >= 90 ? "ok" : s.recall >= 75 ? "warn" : "bad"}
+              value={`${s.recall.toFixed(1)}%`} sub="fakes correctly caught" /> : <NullKpi label="Recall" icon="▤" />}
+            {s.fpr != null ? <KpiCard label="False Positive Rate" icon="!" status={s.fpr <= 2 ? "ok" : s.fpr <= 5 ? "warn" : "bad"}
+              value={`${s.fpr.toFixed(2)}%`} sub="authentic wrongly flagged" /> : <NullKpi label="False Positive Rate" icon="!" />}
           </div>
         </>
       )}
       {s && s.feedback_samples === 0 && (
         <div style={{
           fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "1.75rem",
-          padding: "0.6rem 1rem", background: "var(--glass-bg)", border: "1px solid var(--border)",
-          borderRadius: "var(--r-sm)",
+          padding: "1.5rem", background: "var(--glass-bg)", border: "1px dashed var(--border-mid)",
+          borderRadius: "var(--r-md)", textAlign: "center"
         }}>
-          Live precision/recall/FPR will appear here once users submit ground-truth feedback via the Feedback button after a scan.
+          <div style={{ marginBottom: "0.5rem", color: "var(--text-primary)", fontWeight: 600, fontSize: "0.9rem" }}>No feedback data yet</div>
+          <div style={{ marginBottom: "1rem" }}>
+            Live precision, recall, and FPR will appear here once users submit ground-truth feedback after scanning a video.
+          </div>
+          <a href="/" style={{
+            display: "inline-block", padding: "0.5rem 1rem", background: "var(--accent)", color: "white",
+            textDecoration: "none", borderRadius: "var(--r-sm)", fontWeight: 600, fontSize: "0.8rem",
+            marginTop: "0.25rem", transition: "opacity 0.2s"
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            Analyze a video now
+          </a>
         </div>
       )}
 
