@@ -231,11 +231,21 @@ function StatPill({ stat }: { stat: typeof stats[number] }) {
 
 // ── Main component ───────────────────────────────────────────────────────────
 export const Login: React.FC = () => {
-  const { login, loginAsDemo } = useAuth();
+  const { login, loginAsDemo, register } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [demoState, setDemoState] = useState<"idle" | "loading" | "denied">("idle");
+  const [tab, setTab] = useState<"signin" | "register">("signin");
+
+  // Register form state
+  const [regName, setRegName]         = useState("");
+  const [regEmail, setRegEmail]       = useState("");
+  const [regUsername, setRegUsername] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirm, setRegConfirm]   = useState("");
+  const [regError, setRegError]       = useState("");
+  const [regSuccess, setRegSuccess]   = useState(false);
 
   // Parallax for decorative orb
   const rootRef = useRef<HTMLDivElement>(null);
@@ -262,6 +272,19 @@ export const Login: React.FC = () => {
     } catch {
       setDemoState("denied");
     }
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegError("");
+    if (!regName.trim()) return setRegError("Full name is required.");
+    if (!regEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) return setRegError("Enter a valid email.");
+    if (regUsername.trim().length < 3) return setRegError("Username must be at least 3 characters.");
+    if (regPassword.length < 8) return setRegError("Password must be at least 8 characters.");
+    if (regPassword !== regConfirm) return setRegError("Passwords do not match.");
+    const result = register(regName.trim(), regEmail.trim(), regUsername.trim(), regPassword);
+    if (!result.ok) return setRegError(result.error ?? "Registration failed.");
+    setRegSuccess(true);
   };
 
   return (
@@ -341,53 +364,153 @@ export const Login: React.FC = () => {
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
             >
               <div className="login-card-accent" />
-              <h1 className="login-heading">Welcome back</h1>
-              <p className="login-sub">Sign in to DeepScan — AI deepfake detection platform</p>
 
-              <form onSubmit={handleSubmit} style={{ marginTop: "28px" }}>
-                <div className="login-field">
-                  <label htmlFor="u" className="login-label">Username</label>
-                  <input id="u" type="text" className="login-input"
-                    value={username} onChange={e => setUsername(e.target.value)}
-                    autoComplete="username" autoFocus required placeholder="e.g. admin" />
-                </div>
-                <div className="login-field">
-                  <label htmlFor="p" className="login-label">Password</label>
-                  <input id="p" type="password" className="login-input"
-                    value={password} onChange={e => setPassword(e.target.value)}
-                    autoComplete="current-password" required />
-                </div>
-
-                <AnimatePresence>
-                  {error && (
-                    <motion.p className="login-error"
-                      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
-                    >{error}</motion.p>
-                  )}
-                </AnimatePresence>
-
-                <button type="submit" className="login-submit">
-                  <span>Continue</span>
-                  <span className="login-submit-arrow">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </span>
-                </button>
-              </form>
-
-              <div className="login-divider"><span>ACCOUNTS</span></div>
-              <div className="login-role-pills">
-                <div className="login-role-pill admin">
-                  <span className="login-role-name">admin / admin123</span>
-                  <span className="login-role-access">Full access</span>
-                </div>
-                <div className="login-role-pill user">
-                  <span className="login-role-name">user / user123</span>
-                  <span className="login-role-access">Analyze only</span>
-                </div>
+              {/* Tab switcher */}
+              <div className="login-tabs">
+                <button
+                  className={`login-tab${tab === "signin" ? " login-tab--active" : ""}`}
+                  onClick={() => { setTab("signin"); setError(""); }}
+                  type="button"
+                >Sign in</button>
+                <button
+                  className={`login-tab${tab === "register" ? " login-tab--active" : ""}`}
+                  onClick={() => { setTab("register"); setRegError(""); setRegSuccess(false); }}
+                  type="button"
+                >Register</button>
               </div>
+
+              <AnimatePresence mode="wait">
+                {tab === "signin" ? (
+                  <motion.div key="signin"
+                    initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 18 }} transition={{ duration: 0.22 }}
+                  >
+                    <h1 className="login-heading">Welcome back</h1>
+                    <p className="login-sub">Sign in to DeepScan</p>
+
+                    <form onSubmit={handleSubmit} style={{ marginTop: "24px" }}>
+                      <div className="login-field">
+                        <label htmlFor="u" className="login-label">Username</label>
+                        <input id="u" type="text" className="login-input"
+                          value={username} onChange={e => setUsername(e.target.value)}
+                          autoComplete="username" autoFocus required placeholder="e.g. admin" />
+                      </div>
+                      <div className="login-field">
+                        <label htmlFor="p" className="login-label">Password</label>
+                        <input id="p" type="password" className="login-input"
+                          value={password} onChange={e => setPassword(e.target.value)}
+                          autoComplete="current-password" required />
+                      </div>
+
+                      <AnimatePresence>
+                        {error && (
+                          <motion.p className="login-error"
+                            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+                          >{error}</motion.p>
+                        )}
+                      </AnimatePresence>
+
+                      <button type="submit" className="login-submit">
+                        <span>Continue</span>
+                        <span className="login-submit-arrow">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                          </svg>
+                        </span>
+                      </button>
+                    </form>
+
+                    <div className="login-divider"><span>ACCOUNTS</span></div>
+                    <div className="login-role-pills">
+                      <div className="login-role-pill admin" style={{cursor:"pointer"}} onClick={() => { setUsername("admin"); setPassword("admin123"); }}>
+                        <span className="login-role-name">admin / admin123</span>
+                        <span className="login-role-access">Full access</span>
+                      </div>
+                      <div className="login-role-pill user" style={{cursor:"pointer"}} onClick={() => { setUsername("user"); setPassword("user123"); }}>
+                        <span className="login-role-name">user / user123</span>
+                        <span className="login-role-access">Analyze only</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div key="register"
+                    initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -18 }} transition={{ duration: 0.22 }}
+                  >
+                    {regSuccess ? (
+                      <motion.div className="reg-success"
+                        initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 18 }}
+                      >
+                        <div className="reg-success-icon">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        </div>
+                        <h2 className="reg-success-title">Account created!</h2>
+                        <p className="reg-success-sub">You're now signed in as <strong>{regUsername}</strong>.</p>
+                      </motion.div>
+                    ) : (
+                      <>
+                        <h1 className="login-heading">Create account</h1>
+                        <p className="login-sub">Join DeepScan — free tier, no card needed</p>
+
+                        <form onSubmit={handleRegister} style={{ marginTop: "24px" }}>
+                          <div className="login-field">
+                            <label htmlFor="rn" className="login-label">Full name</label>
+                            <input id="rn" type="text" className="login-input"
+                              value={regName} onChange={e => setRegName(e.target.value)}
+                              autoComplete="name" required placeholder="Prabhat Pandey" />
+                          </div>
+                          <div className="login-field">
+                            <label htmlFor="re" className="login-label">Email</label>
+                            <input id="re" type="email" className="login-input"
+                              value={regEmail} onChange={e => setRegEmail(e.target.value)}
+                              autoComplete="email" required placeholder="you@example.com" />
+                          </div>
+                          <div className="login-field">
+                            <label htmlFor="ru" className="login-label">Username</label>
+                            <input id="ru" type="text" className="login-input"
+                              value={regUsername} onChange={e => setRegUsername(e.target.value)}
+                              autoComplete="username" required placeholder="min. 3 characters" />
+                          </div>
+                          <div className="login-field">
+                            <label htmlFor="rp" className="login-label">Password</label>
+                            <input id="rp" type="password" className="login-input"
+                              value={regPassword} onChange={e => setRegPassword(e.target.value)}
+                              autoComplete="new-password" required placeholder="min. 8 characters" />
+                          </div>
+                          <div className="login-field">
+                            <label htmlFor="rc" className="login-label">Confirm password</label>
+                            <input id="rc" type="password" className="login-input"
+                              value={regConfirm} onChange={e => setRegConfirm(e.target.value)}
+                              autoComplete="new-password" required placeholder="repeat password" />
+                          </div>
+
+                          <AnimatePresence>
+                            {regError && (
+                              <motion.p className="login-error"
+                                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+                              >{regError}</motion.p>
+                            )}
+                          </AnimatePresence>
+
+                          <button type="submit" className="login-submit">
+                            <span>Create account</span>
+                            <span className="login-submit-arrow">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                              </svg>
+                            </span>
+                          </button>
+                        </form>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>
