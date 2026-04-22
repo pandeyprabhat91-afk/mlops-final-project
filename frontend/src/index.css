@@ -362,8 +362,8 @@ body {
   animation: shimmer 3s linear infinite;
 }
 .login-tagline-sub {
-  font-size: 14.5px; color: var(--text-secondary);
-  line-height: 1.65; max-width: 340px;
+  font-size: 1.125rem; color: var(--text-secondary);
+  line-height: 1.65; max-width: 440px;
 }
 
 /* Stats — double bezel cards */
@@ -547,6 +547,68 @@ body {
   font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase;
 }
 
+/* ── Login tab switcher ─────────────────────────────────── */
+.login-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+.login-tab {
+  flex: 1;
+  padding: 7px 0;
+  border: none;
+  border-radius: calc(var(--r-md) - 2px);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.login-tab:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.login-tab--active {
+  background: var(--accent);
+  color: #fff;
+}
+.login-tab--active:hover { background: var(--accent); }
+
+/* ── Registration success ───────────────────────────────── */
+.reg-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0 16px;
+  text-align: center;
+}
+.reg-success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.reg-success-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.reg-success-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .login-outer { flex-direction: column; }
   .login-left { padding: 48px 28px 32px; justify-content: flex-start; }
@@ -628,7 +690,7 @@ body {
   background: rgba(52,168,90,0.10);
   border: 1px solid rgba(52,168,90,0.25);
   border-radius: 99px; padding: 5px 12px;
-  font-size: 10px; font-family: var(--font-mono); font-weight: 500;
+  font-size: 12px; font-family: var(--font-mono); font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--real-color); width: fit-content;
 }
@@ -658,7 +720,7 @@ body {
 }
 
 .hero-body {
-  font-size: 16px; color: var(--text-secondary);
+  font-size: 1.125rem; color: var(--text-secondary);
   line-height: 1.7; max-width: 480px;
   text-wrap: pretty; text-align: center;
 }
@@ -844,7 +906,7 @@ body {
 }
 
 .result-eyebrow {
-  font-size: 10px; font-family: var(--font-mono);
+  font-size: 12px; font-family: var(--font-mono);
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--text-muted); margin-bottom: 8px;
 }
@@ -2978,7 +3040,7 @@ body {
 }
 .lp-stat-pill:hover { border-color: rgba(52,168,90,0.35); }
 .lp-stat-value { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; color: #34a85a; line-height: 1.1; }
-.lp-stat-label { font-size: 0.7rem; font-weight: 500; color: rgba(255,255,255,0.38); letter-spacing: 0.01em; text-transform: uppercase; }
+.lp-stat-label { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.38); letter-spacing: 0.01em; text-transform: uppercase; }
 
 /* ─────────────────────────────────────────────────────────────
    BUTTONS
@@ -3010,14 +3072,14 @@ body {
 .lp-inner { max-width: 1080px; margin: 0 auto; }
 .lp-section-header { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
 .lp-eyebrow {
-  display: inline-block; font-size: 0.68rem; font-weight: 600;
+  display: inline-block; font-size: 0.75rem; font-weight: 600;
   letter-spacing: 0.12em; text-transform: uppercase; color: #34a85a; margin-bottom: 0.85rem;
 }
 .lp-section-title {
   font-family: var(--font-display); font-size: clamp(1.75rem, 4vw, 2.6rem);
   font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; color: #f5f5f0; margin: 0 0 0.85rem;
 }
-.lp-section-sub { font-size: 1rem; color: rgba(255,255,255,0.45); max-width: 52ch; line-height: 1.65; margin: 0; }
+.lp-section-sub { font-size: 1.125rem; color: rgba(255,255,255,0.45); max-width: 52ch; line-height: 1.65; margin: 0; }
 
 /* ─────────────────────────────────────────────────────────────
    SECTION BACKGROUNDS — alternating void / forest floor
