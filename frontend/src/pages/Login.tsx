@@ -246,6 +246,7 @@ export const Login: React.FC = () => {
   const [regConfirm, setRegConfirm]   = useState("");
   const [regError, setRegError]       = useState("");
   const [regSuccess, setRegSuccess]   = useState(false);
+  const [regLoading, setRegLoading]   = useState(false);
 
   // Parallax for decorative orb
   const rootRef = useRef<HTMLDivElement>(null);
@@ -278,13 +279,16 @@ export const Login: React.FC = () => {
     e.preventDefault();
     setRegError("");
     if (!regName.trim()) return setRegError("Full name is required.");
-    if (!regEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) return setRegError("Enter a valid email.");
+    if (!regEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail.trim())) return setRegError("Enter a valid email.");
     if (regUsername.trim().length < 3) return setRegError("Username must be at least 3 characters.");
     if (regPassword.length < 8) return setRegError("Password must be at least 8 characters.");
     if (regPassword !== regConfirm) return setRegError("Passwords do not match.");
+    setRegLoading(true);
     const result = register(regName.trim(), regEmail.trim(), regUsername.trim(), regPassword);
+    setRegLoading(false);
     if (!result.ok) return setRegError(result.error ?? "Registration failed.");
     setRegSuccess(true);
+    setRegName(""); setRegEmail(""); setRegUsername(""); setRegPassword(""); setRegConfirm("");
   };
 
   return (
@@ -488,17 +492,19 @@ export const Login: React.FC = () => {
                               autoComplete="new-password" required placeholder="repeat password" />
                           </div>
 
-                          <AnimatePresence>
-                            {regError && (
-                              <motion.p className="login-error"
-                                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
-                              >{regError}</motion.p>
-                            )}
-                          </AnimatePresence>
+                          <div aria-live="polite" aria-atomic="true">
+                            <AnimatePresence>
+                              {regError && (
+                                <motion.p className="login-error"
+                                  initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+                                >{regError}</motion.p>
+                              )}
+                            </AnimatePresence>
+                          </div>
 
-                          <button type="submit" className="login-submit">
-                            <span>Create account</span>
+                          <button type="submit" className="login-submit" disabled={regLoading}>
+                            <span>{regLoading ? "Creating…" : "Create account"}</span>
                             <span className="login-submit-arrow">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <path d="M5 12h14M12 5l7 7-7 7"/>
