@@ -29,8 +29,9 @@ scrape_configs:
           environment: docker
     metrics_path: /admin/metrics
 
-  # node-exporter disabled on Windows Docker Desktop — WSL2 doesn't expose host /proc.
-  # Re-enable on Linux: add node-exporter service back to docker-compose.yml and uncomment:
-  # - job_name: node-exporter
-  #   static_configs:
-  #     - targets: ["node-exporter:9100"]
+  - job_name: node-exporter
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          service: node-exporter
+          environment: docker
