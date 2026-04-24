@@ -16,11 +16,12 @@ export interface PredictResponse {
   frames_analyzed: number;
 }
 
-export const predictVideo = async (file: File, username = "anonymous"): Promise<PredictResponse> => {
+export const predictVideo = async (file: File, username = "anonymous", signal?: AbortSignal): Promise<PredictResponse> => {
   const form = new FormData();
   form.append("file", file);
   const { data } = await apiClient.post<PredictResponse>("/predict", form, {
     headers: { "Content-Type": "multipart/form-data", "X-Username": username },
+    signal,
   });
   return data;
 };

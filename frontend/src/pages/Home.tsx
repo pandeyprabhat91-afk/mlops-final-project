@@ -29,6 +29,7 @@ export const Home: React.FC = () => {
   const [error, setError]     = useState<string | null>(null);
   const [requestId, setRequestId] = useState("");
   const uploadRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Restore permalink result from URL hash on mount
   useEffect(() => {
@@ -49,15 +50,29 @@ export const Home: React.FC = () => {
     setLoading(true);
     setResult(null);
     setError(null);
+
+    abortControllerRef.current = new AbortController();
+
     try {
-      const data = await predictVideo(file, username || "anonymous");
+      const data = await predictVideo(file, username || "anonymous", abortControllerRef.current.signal);
       setResult(data);
       setRequestId(crypto.randomUUID());
-    } catch (err: unknown) {
+    } catch (err: any) {
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
+        setError("Analysis was canceled by the user.");
+        return;
+      }
       const ax = err as { response?: { data?: { detail?: string } } };
       setError(ax?.response?.data?.detail ?? "An unexpected error occurred.");
     } finally {
       setLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
   };
 
@@ -104,7 +119,7 @@ export const Home: React.FC = () => {
           >
             <motion.div variants={stagger.item} className="hero-eyebrow">
               <span className="hero-eyebrow-dot" />
-              Model active · CNN+LSTM
+              Deepfake Engine Online
             </motion.div>
 
             <motion.h1 variants={stagger.item} className="hero-title">
@@ -114,7 +129,7 @@ export const Home: React.FC = () => {
             </motion.h1>
 
             <motion.p variants={stagger.item} className="hero-body">
-              Upload any MP4 and our CNN&nbsp;+&nbsp;LSTM neural network — trained on the SDFVD dataset — classifies it as authentic or AI-generated.
+              Upload any video and our advanced AI will instantly analyze it to tell you if it's authentic or AI-generated.
             </motion.p>
 
             <motion.div variants={stagger.item} className="hero-cta">
@@ -140,7 +155,7 @@ export const Home: React.FC = () => {
       <div className="analyze-section" id="upload-area" ref={uploadRef}>
         <p className="section-label">Upload &amp; Analyze</p>
 
-        <VideoUpload onFile={handleFile} disabled={loading} />
+        <VideoUpload onFile={handleFile} disabled={loading} onCancel={handleCancel} />
 
         <ProgressBar loading={loading} error={error} />
 

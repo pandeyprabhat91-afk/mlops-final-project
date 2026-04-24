@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 interface Props {
   onFile: (file: File) => void;
   disabled?: boolean;
+  onCancel?: () => void;
 }
 
 function fmtBytes(bytes: number): string {
@@ -12,7 +13,7 @@ function fmtBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export const VideoUpload: React.FC<Props> = ({ onFile, disabled }) => {
+export const VideoUpload: React.FC<Props> = ({ onFile, disabled, onCancel }) => {
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<{ url: string; name: string; size: string } | null>(null);
@@ -90,16 +91,32 @@ export const VideoUpload: React.FC<Props> = ({ onFile, disabled }) => {
             <span className="upload-preview-name">{preview.name}</span>
             <span className="upload-preview-size">{preview.size}</span>
           </div>
-          <label className="upload-link upload-preview-change">
-            Change file
-            <input
-              type="file"
-              accept=".mp4"
-              hidden
-              disabled={disabled}
-              onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])}
-            />
-          </label>
+          {disabled && onCancel ? (
+            <button
+              type="button"
+              style={{
+                marginTop: "0.75rem", padding: "0.4rem 1rem", background: "var(--fake-color)",
+                color: "white", border: "none", borderRadius: "var(--r-sm)", cursor: "pointer",
+                fontWeight: 600, fontSize: "0.8rem", transition: "opacity 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCancel(); }}
+            >
+              Cancel Analysis
+            </button>
+          ) : (
+            <label className="upload-link upload-preview-change">
+              Change file
+              <input
+                type="file"
+                accept=".mp4"
+                hidden
+                disabled={disabled}
+                onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])}
+              />
+            </label>
+          )}
         </div>
       ) : (
         <>
@@ -116,7 +133,7 @@ export const VideoUpload: React.FC<Props> = ({ onFile, disabled }) => {
               />
             </label>
           </p>
-          <p className="upload-spec">MP4 · max 100 MB · CNN+LSTM analysis</p>
+          <p className="upload-spec">MP4 video files (up to 100 MB)</p>
         </>
       )}
 

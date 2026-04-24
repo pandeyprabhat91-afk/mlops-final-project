@@ -72,7 +72,7 @@ def extract_frames(video_path: str, num_frames: int = 30) -> List[np.ndarray]:
 
 
 def detect_faces(frames: List[np.ndarray]) -> List[np.ndarray]:
-    """Run MTCNN face detection on each frame.
+    """Run MTCNN face detection on all frames in one batch.
 
     Falls back to resized original frame if no face detected.
 
@@ -83,24 +83,24 @@ def detect_faces(frames: List[np.ndarray]) -> List[np.ndarray]:
         List of RGB numpy arrays (224, 224, 3)
     """
     mtcnn = get_mtcnn()
+
+    # Convert all frames to PIL RGB once
+    pil_frames = [Image.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)) for f in frames]
+
+    # Batch detect — returns list of tensors or None per frame
+    batch_results = mtcnn(pil_frames)
+
     face_crops = []
     detected = 0
-
-    for frame in frames:
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(rgb)
-        face_tensor = mtcnn(pil_img)
-
+    for i, face_tensor in enumerate(batch_results):
         if face_tensor is not None:
-            # Convert MTCNN output (C,H,W) range [-1,1] → numpy (H,W,C) range [0,255]
             face_np = face_tensor.permute(1, 2, 0).numpy()
             face_np = ((face_np + 1.0) * 127.5).clip(0, 255).astype(np.uint8)
             face_crops.append(face_np)
             detected += 1
         else:
-            # Fallback: resize full frame
-            fallback = cv2.resize(rgb, (224, 224))
-            face_crops.append(fallback)
+            rgb = np.array(pil_frames[i])
+            face_crops.append(cv2.resize(rgb, (224, 224)))
 
     logger.info("face_detection", extra={
         "detected": detected,
@@ -110,7 +110,7 @@ def detect_faces(frames: List[np.ndarray]) -> List[np.ndarray]:
     return face_crops
 
 
-def preprocess_video(video_path: str, num_frames: int = 30) -> torch.Tensor:
+def preprocess_video(video_path: str, num_frames: int = 15) -> torch.Tensor:
     """Full preprocessing pipeline: MP4 → tensor ready for model.
 
     Args:

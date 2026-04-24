@@ -23,6 +23,7 @@ export const ResultCard: React.FC<Props> = ({ result, requestId, onReset }) => {
   const { toast } = useToast();
   const [threshold, setThreshold] = useState(50);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const copyLink = () => {
     const encoded = encodeResult(result);
@@ -161,7 +162,7 @@ export const ResultCard: React.FC<Props> = ({ result, requestId, onReset }) => {
 
   ${gradcamSrc ? `
   <div class="section">
-    <div class="section-title">Grad-CAM Saliency Map</div>
+    <div class="section-title">AI Visual Analysis</div>
     <img class="gradcam" src="${gradcamSrc}" alt="Grad-CAM heatmap"/>
     <div class="explainer" style="margin-top:0.75rem">
       <strong>How to read this heatmap:</strong> Warmer colors (red/yellow) indicate regions the model weighted most heavily.
@@ -220,46 +221,74 @@ export const ResultCard: React.FC<Props> = ({ result, requestId, onReset }) => {
             />
           </div>
 
-          {/* Threshold slider */}
-          <div className="threshold-wrap">
-            <label className="threshold-label" htmlFor="threshold-slider">
-              Threshold: {threshold}%
-            </label>
-            <input
-              id="threshold-slider"
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={threshold}
-              onChange={(e) => setThreshold(Number(e.target.value))}
-              className="threshold-slider"
-            />
-            <div className="threshold-verdict-row">
-              <span className={`threshold-verdict-badge ${effectivePrediction}`}>
-                {pct >= threshold ? "Exceeds" : "Below"} threshold
-                {" — "}classified as <strong>{verdict}</strong>
-              </span>
-            </div>
-            <p className="threshold-hint">
-              Drag to re-evaluate verdict client-side. Default: 50%.
-            </p>
-          </div>
+          {/* Advanced Details Toggle */}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ width: "100%", justifyContent: "space-between", marginTop: "1rem", padding: "0.75rem 1rem", background: "var(--bg-secondary)", borderRadius: "8px" }}
+            onClick={() => setShowAdvanced(!showAdvanced)}
+          >
+            <span>Advanced Details</span>
+            <svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              style={{ transform: showAdvanced ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+            >
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
 
-          {/* Meta */}
-          <div className="meta-grid">
-            <div className="meta-cell">
-              <span className="meta-cell-label">Frames analyzed</span>
-              <span className="meta-cell-value">{result.frames_analyzed}</span>
-            </div>
-            <div className="meta-cell">
-              <span className="meta-cell-label">Inference time</span>
-              <span className="meta-cell-value">
-                {result.inference_latency_ms.toFixed(0)}
-                <span className="meta-cell-unit">ms</span>
-              </span>
-            </div>
-          </div>
+          <AnimatePresence>
+            {showAdvanced && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, overflow: "hidden" }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ marginTop: "1rem" }}
+              >
+                {/* Threshold slider */}
+                <div className="threshold-wrap">
+                  <label className="threshold-label" htmlFor="threshold-slider">
+                    Threshold: {threshold}%
+                  </label>
+                  <input
+                    id="threshold-slider"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={threshold}
+                    onChange={(e) => setThreshold(Number(e.target.value))}
+                    className="threshold-slider"
+                  />
+                  <div className="threshold-verdict-row">
+                    <span className={`threshold-verdict-badge ${effectivePrediction}`}>
+                      {pct >= threshold ? "Exceeds" : "Below"} threshold
+                      {" — "}classified as <strong>{verdict}</strong>
+                    </span>
+                  </div>
+                  <p className="threshold-hint">
+                    Drag to re-evaluate verdict client-side. Default: 50%.
+                  </p>
+                </div>
+
+                {/* Meta */}
+                <div className="meta-grid">
+                  <div className="meta-cell">
+                    <span className="meta-cell-label">Frames analyzed</span>
+                    <span className="meta-cell-value">{result.frames_analyzed}</span>
+                  </div>
+                  <div className="meta-cell">
+                    <span className="meta-cell-label">Inference time</span>
+                    <span className="meta-cell-value">
+                      {result.inference_latency_ms.toFixed(0)}
+                      <span className="meta-cell-unit">ms</span>
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Grad-CAM */}
           {result.gradcam_image && (
